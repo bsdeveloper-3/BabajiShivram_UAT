@@ -1,0 +1,55 @@
+﻿<html>
+<body style="margin-left: 10px;height:100%; width:100%; font-family:Arial; font-style:normal; font-size:10pt; color:#000;">
+Dear Sir / Madam,
+<BR><BR>
+	Please find below new truck request no. <u><b>@TRRefNo</b></u> requested for Babaji Job <u><b>@BabajiJobNo</b></u>.
+<BR><BR>
+<table style="border:1px solid black; font-family:Arial; font-style:normal; font-size:10pt" width="90%" border="1">
+<tr style="background-color:#FCD5B4;">
+    <td style="padding: 3px">Customer</td>
+    <td style="padding: 3px">@CustName</td>
+	<td style="padding: 3px">Shipper Name</td>
+    <td style="padding: 3px">@Shipper</td>
+</tr>
+<tr>
+	<td style="padding: 3px">Branch</td>
+    <td style="padding: 3px">@Branch</td>
+	<td style="padding: 3px">Port</td>
+    <td style="padding: 3px">@Port</td>
+</tr>
+<tr style="background-color:#FCD5B4;">
+	<td style="padding: 3px">Total No. of Containers</td>
+    <td style="padding: 3px">@NoofConts</td>
+	<td style="padding: 3px">No of Packages</td>
+    <td style="padding: 3px">@NoofPackages</td>
+</tr>
+<tr>
+	<td style="padding: 3px">Sum of 20</td>
+    <td style="padding: 3px">@Sum20</td>
+	<td style="padding: 3px">Sum of 40</td>
+    <td style="padding: 3px">@Sum40</td>
+</tr>
+<tr style="background-color:#FCD5B4;">
+	<td style="padding: 3px">Gross Weight</td>
+    <td style="padding: 3px">@GrossWeight</td>
+	<td style="padding: 3px">Shipping Bill Type</td>
+    <td style="padding: 3px">@ShippingBillType</td>
+</tr>
+<tr>
+	<td style="padding: 3px">Export Type</td>
+    <td style="padding: 3px">@ExportType</td>
+	<td style="padding: 3px">Delivery Destination</td>
+    <td style="padding: 3px">@Destination</td>
+</tr>
+<tr style="background-color:#FCD5B4;">
+	<td style="padding: 3px">Dimension</td>
+    <td style="padding: 3px">@Dimension</td>
+	<td style="padding: 3px">Vehicle Place Require Date</td>
+    <td style="padding: 3px">@VehiclePlaceDate</td>
+</tr>
+</table>
+<BR>Thanks & Regards,<BR>
+<BR>@EmpName<BR><BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+</body>
+<html>

@@ -1,0 +1,86 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div id="CAN">
+        <br />
+        <div style="float:left; width:30%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:bold;">
+            [TodayDate]
+        </div>
+        <div style="float:right; width:30%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:bold;">
+            [JobRefNO]<BR>
+	<span>BS/FF/F-02</span>
+        </div>
+        <div style="clear:both;" ></div>
+        <br /><br />
+        <div style="font-size:14pt; font-family:@Arial Unicode MS; font-weight:normal; text-align:center;">
+            <B><u> CARGO ARRIVAL NOTICE / INVOICE </u></B>
+        </div>
+        <div style="clear:both;"><br /></div>
+        
+        <table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:8pt;">
+            <tr>
+                <td>
+                   <B> CONSIGNEE </B>
+                </td>
+                <td>
+                   <B> SHIPPER </B>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    [ConsigneeName]
+                </td>
+                <td>
+                    [ShipperName]
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    [ConsigneeAddress]
+                </td>
+                <td valign="top">
+                    [ShipperAddress]
+                </td>
+            </tr>
+        </table>
+        <div style="clear:both;"></div>
+        <table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:8pt;">
+            <tr>
+                <td><B>MAWB/MBL</B></td> <td><B>HAWB/HBL</B></td> <td><B>INVOICE No</B></td> <td><B>PO No</B></td>
+            </tr>
+            <tr>
+                <td>[MAWBL]</td> <td>[HAWBL]</td> <td>[InvoiceNo]</td> <td>[PONo]</td>
+            </tr>
+            <tr>
+                <td><B>CARRIER/VESSEL</B></td> <td><B>FLIGHT/VOYAG</B></td> <td><B>ORIGIN PORT/AIRPORT</B></td> <td><B>DESTINATION</B></td>
+            </tr>
+            <tr>
+                <td>[VesselName]</td> <td>[VesselNo]</td> <td>[OriginPort]</td> <td>[DestinationPort]</td>
+            </tr>
+            <tr>
+                <td><B>NO OF PKGS</B></td> <td><B>GROSS WEIGHT (KGS)</B></td> <td><B>[lblChargeCBM]</B></td> <td><B>ARRIVAL DATE</B></td>
+            </tr>
+            <tr>
+                <td>[NoofPkgs]</td> <td>[GrossWeight]</td> <td>[ValueChargCBM]</td> <td>[ArrivalDate]</td>
+            </tr>
+            <tr>
+                <td><B>IGM No & Date</B></td><td><B>ITEM No</B></td><td><B>CARGO DESCRIPTION</B></td><td></td> 
+            </tr>
+            <tr>
+                <td>[IGMNo][IGMDate]</td><td>[ITEMNo]</td><td colspan="2">[CargoDescription] </td>
+            </tr>
+        </table>
+        <p>
+            <br />
+            <span lang="EN-IN">
+                <!--<o:p>&nbsp;</o:p>-->
+            </span>
+        </p>
+        </div>
+    </form>
+</body>
+</html>

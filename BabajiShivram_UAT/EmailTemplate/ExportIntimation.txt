@@ -1,0 +1,59 @@
+﻿<html>
+<body style="margin-left: 10px;height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;">
+Dear Sir / Madam,
+<BR><BR>
+	Custom Clearance for Babaji Job - 
+	<b>@JobRefNo</b> has been completed & ready documents handed over vide <BR>
+	S/Bill No. <b>@SBNo</b>  Date <b>@SBDate</b> .
+	<BR><BR>Please check out the following mentioned job details - <BR><BR>
+<table style="border:1px solid black; font-family:Arial; font-style:normal; font-size:9pt" width="90%">
+	<tr style="background-color:#FCD5B4;">
+		<td style="padding: 3px">Babaji Job No</td>
+		<td style="padding: 3px">@JobRefNo</td>
+	</tr>
+	<tr style="background-color:#99CCFF;">
+		<td style="padding: 3px">Customer</td>
+		<td style="padding: 3px">@Customer</td>
+	</tr>
+	<tr style="background-color:#FCD5B4;">
+		<td style="padding: 3px">Cust Ref No</td>
+		<td style="padding: 3px">@CustRefNo</td>
+	</tr>
+	<tr style="background-color:#99CCFF;">
+		<td style="padding: 3px">Shipper</td>
+		<td style="padding: 3px">@Shipper</td>
+	</tr>
+	<tr style="background-color:#FCD5B4;">
+		<td style="padding: 3px">Consignee</td>
+		<td style="padding: 3px">@Consignee</td>
+	</tr>
+	<tr style="background-color:#99CCFF;">
+		<td style="padding: 3px">Mode</td>
+		<td style="padding: 3px">@Mode</td>
+	</tr>
+	<tr style="background-color:#FCD5B4;">
+		<td style="padding: 3px">Port Of Loading</td>
+		<td style="padding: 3px">@POL</td>
+	</tr>
+	<tr style="background-color:#99CCFF;">
+		<td style="padding: 3px">PortOf Discharge</td>
+		<td style="padding: 3px">@POD</td>
+	</tr>
+	<tr style="background-color:#FCD5B4;">
+		<td style="padding: 3px">SB No</td>
+		<td style="padding: 3px">@SBNo</td>
+	</tr>
+	<tr style="background-color:#99CCFF;">
+		<td style="padding: 3px">SB Date</td>
+		<td style="padding: 3px">@SBDate</td>
+	</tr>
+	<tr style="background-color:#FCD5B4;">
+		<td style="padding: 3px">Shipment Get In Date</td>
+		<td style="padding: 3px">@ShipmentGetInDate</td>
+	</tr>
+</table>
+<BR>Thanks & Regards,
+<BR>@EmpName<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+</body>
+<html>

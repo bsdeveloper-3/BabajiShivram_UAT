@@ -1,0 +1,38 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+    Dear Sir / Madam,
+    <BR /><BR />
+    Please provide us ETA & IGM-ITEM details  for the shipment..
+  
+    <BR /><BR />
+    Consignee : @CONSIGNEE
+    <BR /><BR />
+    MBL No. : @MBLNO
+	<BR /><BR />
+    MBL Date : @MBLDate
+	<BR /><BR />
+    HBL No. : @HBLNO	
+	<BR /><BR />
+    HBL Date : @HBLDate
+  
+    <BR /><BR />
+    <BR /><BR />
+    Kindly note new Notification & Circular from customs regarding Sec 46 & 47 of Customs Act-62 for our actions on it.The BE filling & payment of duty time is been amended w.e.f. 1st April 2017
+
+	Be noting  Before IGM final date  otherwise  consignee have penalized 
+	for Rs.5000/- penalty per day for 3 days & there after  Rs.10000/- per days . 
+
+    <BR />
+    Thank you for the continuous support.
+    <BR /> <BR /> <BR />
+    Regards,
+    <BR />
+    @EmpName
+    <BR />
+    Babaji Shivram Clearing & Carriers Pvt. Ltd.
+    <BR /><BR />
+    <B><I>Note*</I> : This is system generated mail, Please do not reply to this message via e-mail.</B>
+    <BR />
+
+</body>
+</html>

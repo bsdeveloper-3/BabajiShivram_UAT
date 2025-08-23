@@ -1,0 +1,13 @@
+Dear <AssignedToName>,
+<BR><BR>
+With reference to the above subject, freight enquiry number <EnqRefNo> assigned to you.<BR> 
+Please follow the enquiry.
+<BR><BR>
+
+Regards,
+<BR><BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>

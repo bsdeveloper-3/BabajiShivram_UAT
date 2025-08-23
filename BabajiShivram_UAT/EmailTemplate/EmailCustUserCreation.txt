@@ -1,0 +1,23 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+With reference to the above subject, Login account created for Babaji Import Tracking Application.
+<BR><BR>
+Login Detail:
+<BR><BR>
+User Name: "<AccountEmail>" 
+<BR><BR>
+Thank you for the continuous support.
+<BR><BR>
+Regards,
+<BR><BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+
+</body>
+</html>

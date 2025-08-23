@@ -1,0 +1,29 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+With reference to the above shipment, we are pleased to inform you that the Billing<BR>
+documents for said shipment has been dispatched on <DispatchDate>
+<BR><BR>
+Dispatch Details as below:<BR><BR>
+Dispatch Through: <PersonName><BR>
+Dispatch Type:	<DispatchName><BR>
+<DocketNo>
+<BR><BR>
+And below are the documents has been dispatched:<BR><BR>
+<DocumentList>
+<BR><BR>
+Kindly acknowledge the receipts of above shipment at you end.
+<BR><BR>
+Thank you for the continuous support.
+<BR><BR><BR>
+Regards,<BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+
+</body>
+</html>

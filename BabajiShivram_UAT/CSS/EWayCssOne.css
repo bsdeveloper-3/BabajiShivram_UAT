@@ -1,0 +1,74 @@
+﻿/*******Part One */
+        .ui-autocomplete
+        {
+            max-height: 85px !important;
+            overflow: auto !important; /* prevent horizontal scrollbar */
+            overflow-x: hidden !important;
+        }
+        /* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+        .ui-corner-all
+        {
+            -moz-border-radius: 4px 4px 4px 4px !important;
+        }
+        .ui-widget-content
+        {
+            border: 1px solid #ABCDEF;
+            color: #222222;
+            
+        }
+        .ui-widget
+        {
+            font-family: Verdana,Arial,sans-serif !important;
+            font-size: 10px !important;
+        }
+        .ui-menu
+        {
+            display: block;
+            float: left;
+            list-style: none outside none;
+            margin: 0;
+            padding: 2px;
+        }
+        .ui-menu .ui-menu-item a:hover
+        {
+            display: block;
+            padding: 3px 3px 3px 3px;
+            text-decoration: none;
+            color: White;
+            cursor: pointer;
+            background-color: ButtonText;
+            font-size: 14px !important;
+        }
+      
+        #navbar > .rightnav_color a
+        {
+            color: #0EF8FC;
+            font-size: 18px;
+        }
+        #navbar > .rightnav_color a:hover
+        {
+            color: #F475FF;
+        }
+        .title_css
+        {
+            text-align: center;
+            padding-left: 5PX;
+            font-family: Arial;
+            font-variant: normal;
+            font-size: 24px;
+            color: #fff;
+        }
+        .trad_lbl_color
+        {
+            color: #fff;
+            margin-left: 10px;
+        }
+        .header_bg
+        {
+            background-image: url('images/log_b4.png');
+            background-repeat: no-repeat;
+            background-color: #121254;
+        }
+    

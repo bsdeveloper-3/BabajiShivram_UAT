@@ -1,0 +1,14 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: TaxProEWB.API.Constants
+// Assembly: TaxProEWB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 651C2957-9A00-43E1-9864-7C8CEF88DD73
+// Assembly location: C:\inetpub\wwwroot\TaxProEWBApiIntigrationDemo.NET\bin\x86\Debug\TaxProEWB.API.dll
+
+namespace TaxProEWB.API
+{
+  public static class Constants
+  {
+    public static string DecryptionError = "Error while decrypting or decoding received data.";
+    public static int AuthTokenValidityMin = 352;
+  }
+}

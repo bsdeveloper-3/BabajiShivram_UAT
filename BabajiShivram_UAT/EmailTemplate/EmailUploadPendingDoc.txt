@@ -1,0 +1,18 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+Pending Document Uploaded.
+<BR><BR>
+ <DocumentName>
+<BR><BR>
+Regards,
+<BR><BR>
+<CustUserName>
+<BR>
+<CustName>
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+</body>
+</html>

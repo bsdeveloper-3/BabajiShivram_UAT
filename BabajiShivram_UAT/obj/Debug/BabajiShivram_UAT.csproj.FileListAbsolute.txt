@@ -1,0 +1,4 @@
+C:\Users\amit.bakshi\source\repos\BabajiShivram_UAT\BabajiShivram_UAT\obj\Debug\BabajiShivram_UAT.csproj.AssemblyReference.cache
+C:\Users\amit.bakshi\source\repos\BabajiShivram_UAT\BabajiShivram_UAT\obj\Debug\BabajiShivram_UAT.csproj.CoreCompileInputs.cache
+C:\inetpub\wwwroot\BabajiShivram_UAT\BabajiShivram_UAT\obj\Debug\BabajiShivram_UAT.csproj.AssemblyReference.cache
+C:\inetpub\wwwroot\BabajiShivram_UAT\BabajiShivram_UAT\obj\Debug\BabajiShivram_UAT.csproj.CoreCompileInputs.cache

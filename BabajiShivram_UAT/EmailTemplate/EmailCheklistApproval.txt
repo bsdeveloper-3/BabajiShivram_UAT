@@ -1,0 +1,25 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+With reference to the above subject, we are pleased to inform that we have received the <BR>
+documents for custom clearance,further enclosed herewith checklist for your approval.
+<BR><BR>
+Please check & approve the attached checklist for further processing of documentation. 
+<BR><BR>
+Please click on below link to Login. <BR><BR>
+http://live.babajishivram.com/CustomerLogin.aspx 
+<BR><BR>
+Thank you for the continuous support.
+<BR><BR>
+Regards,
+<BR><BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+
+</body>
+</html>

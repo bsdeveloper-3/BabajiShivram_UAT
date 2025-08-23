@@ -1,0 +1,94 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div id="CAN">
+        <div style="clear:both;" ></div>
+        <br /><br/><br /><br />
+        <div style="font-size:12pt; font-family:@Arial Unicode MS; font-weight:normal; text-align:center; ">
+            <B><u> CARGO ARRIVAL NOTICE</u></B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        <div style="clear:both;"><br /></div>
+        <div style="float:left; width:30%; font-size:9pt; font-family:@Arial Unicode MS;">
+            <b>Date</b> &nbsp;&nbsp; [TodayDate]
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <b>Job No</b> &nbsp;&nbsp;  [JobRefNO]
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <b>Enquiry No</b> &nbsp;&nbsp; [ENQRefNo]
+        </div>
+        <div style="float:right; width:30%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:bold;">
+            <!--<span>BS/FF/F-02</span>-->
+        </div>
+        <br />
+        <table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:8pt;">
+            <tr>
+                <td>
+                   <B> CONSIGNEE </B>
+                </td>
+                <td>
+                   <B> SHIPPER </B>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    [ConsigneeName]
+                </td>
+                <td>
+                    [ShipperName]
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    [ConsigneeAddress] &nsub; <B>GSTIN:&nbsp;[DivGSTN]</B>
+                </td>
+                <td valign="top">
+                    [ShipperAddress]
+                </td>
+            </tr>
+        </table>
+        <div style="clear:both;"></div>
+        <table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:8pt;">
+            <tr>
+                <td><B>MAWB/MBL</B></td> <td><B>HAWB/HBL</B></td> <td><B>INVOICE No</B></td> <td><B>PO No</B></td>
+            </tr>
+            <tr>
+                <td>[MAWBL]</td> <td>[HAWBL]</td> <td>[InvoiceNo]</td> <td>[PONo]</td>
+            </tr>
+            <tr>
+                <td><B>CARRIER/VESSEL</B></td> <td><B>FLIGHT/VOYAG</B></td> <td><B>ORIGIN PORT/AIRPORT</B></td> <td><B>DESTINATION</B></td>
+            </tr>
+            <tr>
+                <td>[VesselName]</td> <td>[VesselNo]</td> <td>[OriginPort]</td> <td>[DestinationPort]</td>
+            </tr>
+            <tr>
+                <td><B>NO OF PKGS</B></td> <td><B>GROSS WEIGHT (KGS)</B></td> <td><B>[lblChargeCBM]</B></td> <td><B>ARRIVAL DATE</B></td>
+            </tr>
+            <tr>
+                <td>[NoofPkgs]</td> <td>[GrossWeight]</td> <td>[ValueChargCBM]</td> <td>[ArrivalDate]</td>
+            </tr>
+            <tr>
+                <td><B>IGM No & Date</B></td><td><B>ITEM No</B></td><td><B>CARGO DESC</B></td><td><B>PLACE OF SUPPLY</B></td> 
+            </tr>
+            <tr>
+                <td>[IGMNo][IGMDate]</td><td>[ITEMNo]</td><td>[CargoDescription] </td><td>[PlaceOfDelivery] </td>
+            </tr>
+            <tr>
+                <td><b>Mode</b></td><td><b>Container Type</b></td><td><b>Count20</b></td><td><b>Count40</b></td>
+            </tr>
+            <tr>
+                <td>[Mode]</td><td>[ContainerTypeName]</td><td>[CountOf20]</td><td>[CountOf40]</td>
+            </tr>
+        </table>
+        <p>
+            <br />
+            <span lang="EN-IN">
+                <!--<o:p>&nbsp;</o:p>-->
+            </span>
+        </p>
+        </div>
+    </form>
+</body>
+</html>

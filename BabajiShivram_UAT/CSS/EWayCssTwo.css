@@ -1,0 +1,164 @@
+﻿/*****Eway CSS part two*/
+        .pagelayout {
+            width: 1050px;
+            margin: 10px auto;
+        }
+
+        .table_css {
+            width: 1050px;
+            margin: 10px auto;
+            line-height: 30px;
+        }
+
+        .table_css1 {
+            width: 1050px;
+            margin: 0px auto;
+        }
+
+        .title_gov {
+            text-align: center;
+            font-family: Verdana;
+            font-size: 16px;
+        }
+
+        .title_dep {
+            text-align: center;
+            font-family: Verdana;
+            font-size: 20px;
+        }
+
+        .title_model {
+            text-align: center;
+            font-family: Verdana;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .title_rule {
+        }
+
+        .borderless td, th {
+            border: none;
+        }
+
+        .box {
+            width: 200px;
+            border: 1px solid gray;
+        }
+
+        .gvtables th {
+            background-color: #CBE9FE;
+            color: #167EC6;
+        }
+
+        .gvtables {
+            border: solid 1px #4d4d4d !important;
+        }
+
+            .gvtables tr {
+                border: solid 1px #4d4d4d !important;
+            }
+
+            .gvtables td {
+                border: 10px solid #4d4d4d !important;
+            }
+
+        .table_css {
+            border-bottom: 0px !important;
+        }
+
+            .table_css th, .table_css td {
+                border: 1px !important;
+            }
+
+        .fixed-table-container {
+            border: 0px !important;
+        }
+
+        .nav a:hover:not(.active) {
+            color: #fff;
+            background-color: transparent;
+        }
+
+        @media Print {
+            .btnprint {
+                display: none;
+            }
+
+            .modultitle {
+                display: none;
+            }
+
+            .headertable {
+                display: none;
+            }
+
+            .QRHeader {
+                display: block;
+                width: 1050px;
+                margin: 0 auto;
+            }
+
+            #ctl00_masterheaderhide {
+                display: none !important;
+            }
+
+            #ctl00_masterheaderhide1 {
+                display: none !important;
+            }
+
+            #ctl00_headercont_masterheaderhide {
+                display: none !important;
+            }
+        }
+
+        .Watermark {
+            width: 450px;
+            height: 500px;
+            display: block;
+            position: absolute;
+            left: 35%;
+            top: 45%;
+        }
+
+        .form-control1 {
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: "Rupee";
+            font-style: normal;
+            font-weight: normal;
+            src: url("../JS/Rupee_Foradian.ttf");
+        }
+
+
+
+        .classfont {
+            font-family: RUPEE;
+        }
+
+
+        .navbarmodultitle a {
+            color: #fff;
+        }
+
+        .list-group a {
+            color: #1575a8;
+        }
+
+        .modultitle {
+            background-color: #3d8eb9;
+            color: #fff;
+            text-align: center;
+            border-bottom: 1px solid #fff;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            height: 30px;
+        }
+
+        .navbarmodultitle {
+            height: 20px;
+            min-height: inherit;
+            margin-top: -10px;
+        }

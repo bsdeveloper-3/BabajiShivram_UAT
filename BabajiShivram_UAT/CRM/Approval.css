@@ -1,0 +1,57 @@
+﻿html, body {
+    height: 100%;
+}
+
+body {
+    color: #000000bf;
+    background-color: #fff;
+    font-family: 'Open Sans',Arial,Helvetica,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+}
+
+.headertop {
+    padding: 10px;
+}
+
+.Space {
+    padding: 15px;
+}
+
+.NewDiv {
+    background-color: #eee;
+    border: 2px solid #999;
+    padding-top: 20px;
+}
+
+.formApproval {
+    padding: 10px;
+}
+
+td {
+    padding: 5px;
+    border: 1px solid;
+}
+
+tr {
+    border: 1px solid;
+    padding: 30px;
+}
+
+.btn {
+    color: White;
+    font-weight: bold;
+    border: 2px solid #9990;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+table .btn {
+    margin: 0 3px;
+}

@@ -1,0 +1,103 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <title></title>
+</head>
+<body lang="EN-GB" style="background-color:#F0E8A0;">
+    
+    <form id="form1" runat="server">
+    <div id="DOAIR">
+        <br />
+        <br />
+        <br />
+        <div style="float:left; width:50%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+            [TodayDate]
+        </div>
+        <div style="float:right; width:50%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+            [HOAddress1]
+        </div>
+        <div style="float:right; width:50%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+            [HOAddress2]
+        </div>
+        <div style="float:right; width:50%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+            [HOAddress3]
+        </div>
+        <div style="float:right; width:50%; font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+            [HOAddress4]
+        </div>
+        <div style="clear:both;"><br /><br /></div>
+        <div style="font-size:14pt; font-family:@Arial Unicode MS; font-weight:normal; text-align:center;">
+               <u> DELIVERY ORDER </u>
+        </div>
+         <div style="clear:both;"><br /></div>
+        <div style="font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+            To,
+        </div>
+        <div style="font-size:9pt; font-family:@Arial Unicode MS; font-weight:normal;">
+               &nbsp;&nbsp; The Commissioner Of Customs, &nbsp;&nbsp; [PortCity]
+        </div>
+        <div style="clear:both;"><br /><br /></div>
+        <table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:9pt;">
+            <tr>
+                <td>
+                    Consignee Address:
+                </td>
+                <td colspan="3">
+                    [ConsigneeAddress]
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Please Deliver To:
+                </td>
+                <td colspan="3">
+                    [ConsigneeAddress]
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Following packages which arrived Ex-Flight No.:
+                </td>
+                <td>
+                    [FlightNo]
+                </td>
+                <td>
+                    Arrival Date
+                </td>
+                <td>
+                    [ArrivalDate]
+                </td>
+            </tr>
+        </table>
+        <div style="clear:both;"><br /><br /></div>
+        <table border="1" cellpadding="10" style="border:thin solid #000000; font-family:Arial; font-style:normal; font-size:8pt; vertical-align:middle;">
+            <tr>
+                <td>HAWB No</td> <td>IGM No & Date</td><td>No of Pkgs</td> <td>Gross Weight <br /> Charge Weight</td> <td>Description</td><td>Marks and Number</td><td>MAWB No</td>
+            </tr>
+            <tr>
+                <td>[HAWBL]</td> <td>[IGMNo]<br />[IGMDate]</td><td>[NoOfPkgs]</td> <td>[GrossWeight] kg<br />[ChargeWeight] kg</td> <td>[Description]</td><td>AS ADD</td><td>[MAWBL]</td>
+            </tr>
+        </table>
+        
+        <p>
+            <span lang="EN-IN">
+                <!--<o:p>&nbsp;</o:p>-->
+            </span>
+        </p>
+        
+        <br />
+        
+    </div>
+    </form>
+</body>
+</html>

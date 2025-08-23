@@ -1,0 +1,15 @@
+Dear User,
+<BR><BR>
+With reference to the above subject, freight enquiry number <EnqRefNo> shared with you.<BR> 
+Please login to the system and follow the enquiry.<BR><BR>
+
+http://live.babajishivram.com
+<BR><BR>
+
+Regards,
+<BR><BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>

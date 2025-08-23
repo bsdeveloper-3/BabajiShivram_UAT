@@ -1,0 +1,16 @@
+﻿using System;
+using System.Linq.Expressions;
+/// <summary>
+/// Summary description for NameOf
+/// </summary>
+namespace TaxProEWB.API
+{
+    public class NameOf
+    {
+        public static String nameof<T>(Expression<Func<T>> name)
+        {
+            MemberExpression expressionBody = (MemberExpression)name.Body;
+            return expressionBody.Member.Name;
+        }
+    }
+}

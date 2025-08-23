@@ -1,0 +1,773 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>
+        E-Way Bill System
+    </title>
+    <link href="../css/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link href="../css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+    <link href="../Styles/Login_Site.css" rel="stylesheet" type="text/css">
+    <script type="text/ecmascript" src="../JS/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../JS/jquery.min.js"></script>
+    <script type="text/javascript" src="../JS/jquery-ui.js"></script>
+    <script type="text/ecmascript" src="JS/bootstrap.min.js"></script>
+    <script type="text/javascript" src="JS/jquery.min.js"></script>
+    <script type="text/javascript" src="JS/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {  });
+        $(document).keydown(function (event) {
+            if (event.keyCode == 123) {
+                return false;
+            }
+            else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
+                return false;
+            }
+        });
+
+        $(document).on("contextmenu", function (e) {
+            e.preventDefault();
+        });
+
+    </script>
+
+    <style type="text/css">
+        @media Print {
+            .btnprint {
+                display: none;
+            }
+
+
+
+            .QRHeader {
+                display: block;
+                width: 1000px;
+                margin: 0 auto;
+            }
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .modultitle {
+            background-color: #3d8eb9;
+            color: #fff;
+            text-align: center;
+            border-bottom: 1px solid #fff;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            height: 30px;
+        }
+
+        .navbarmodultitle {
+            height: 20px;
+            min-height: inherit;
+            margin-top: -10px;
+        }
+
+        .nav a:hover:not(.active) {
+            color: #fff;
+            background-color: transparent;
+        }
+
+        .navbarmodultitle a {
+            color: #fff;
+        }
+    </style>
+    <style>
+             .ui-autocomplete {
+                 max-height: 85px !important;
+                 overflow: auto !important; /* prevent horizontal scrollbar */
+                 overflow-x: hidden !important;
+             }
+             /* IE 6 doesn't support max-height
+        * we use height instead, but this forces the menu to always be this tall
+        */
+             .ui-corner-all {
+                 -moz-border-radius: 4px 4px 4px 4px !important;
+             }
+
+             .ui-widget-content {
+                 border: 1px solid #ABCDEF;
+                 color: #222222;
+             }
+
+             .ui-widget {
+                 font-family: Verdana,Arial,sans-serif !important;
+                 font-size: 10px !important;
+             }
+
+             .ui-menu {
+                 display: block;
+                 float: left;
+                 list-style: none outside none;
+                 margin: 0;
+                 padding: 2px;
+             }
+
+                 .ui-menu .ui-menu-item a:hover {
+                     display: block;
+                     padding: 3px 3px 3px 3px;
+                     text-decoration: none;
+                     color: White;
+                     cursor: pointer;
+                     background-color: ButtonText;
+                     font-size: 14px !important;
+                 }
+
+             #navbar > .rightnav_color a {
+                 color: #0EF8FC;
+                 font-size: 18px;
+             }
+
+                 #navbar > .rightnav_color a:hover {
+                     color: #F475FF;
+                 }
+
+             .title_css {
+                 text-align: center;
+                 padding-left: 5PX;
+                 font-family: Arial;
+                 font-variant: normal;
+                 font-size: 24px;
+                 color: #fff;
+             }
+
+             .trad_lbl_color {
+                 color: #fff;
+                 margin-left: 10px;
+             }
+
+             .header_bg {
+                 background-image: url('images/log_b4.png');
+                 background-repeat: no-repeat;
+                 background-color: #121254;
+             }
+    </style>
+
+
+    <style type="text/css" media="print">
+        .modultitle {
+            display: none !important;
+        }
+
+        .headertable {
+            display: none !important;
+        }
+
+        #masterheaderhide {
+            display: none !important;
+        }
+    </style>
+
+
+
+</head>
+<body>
+    <form name="aspnetForm" method="post" action="./EBPrint.aspx?EBPrint.aspx%3fencrypt=&amp;cal=1" id="aspnetForm" autocomplete="off">
+        <div>
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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">
+        </div>
+
+        <script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+        </script>
+
+
+        <script src="/WebResource.axd?d=F0RD-uuqURkC5M6aRTISacFPTcSGwLELXMnCimGa0eonz-lm_gatoyHfWOPH1p_RDCGxw_eQ1EVTabC2gIhWOWDIQUoXUoKYmcWDnWMJ2pE1&amp;t=636511646826842555" type="text/javascript"></script>
+
+
+        <script type="text/javascript">
+//<![CDATA[
+javascript:generateQRCode();//]]>
+        </script>
+
+        <script src="/ScriptResource.axd?d=qBDGrpbPpXAiQMXWhdQBt_CW_9UNATEZHhFRdv9xzIYUpLFMBpllQJsR-N_u2Fw2kRNHfP4oHFv6-qVj4PtaVYwz6DE7tX2aJy81NV8kTilWESizn4xZtHRLQE06ITbK-WH3aAtgLfwXG-ONk-11NdqtnXiTqpAVy5CORZIMEIw1&amp;t=ffffffffad4b7194" type="text/javascript"></script>
+        <script src="/ScriptResource.axd?d=xwUn_FwoTKW8DzkohwDQyrk9-y4iJ3zy2iziwBf3OhHARoP_DKIqmXJLaHElr5yLKIrzf4M8KaSK2DeKS1VRdEcXWGTkY9GJ7sWykWNpqvK1lUXO4lNrMbfO250t7HD_qpXpJvd-bDNpNZ94yaQXz2oHYJNt7OtY906Ilvyr2GNQXzmnlt0yyv3QWvYYuVeE0&amp;t=ffffffffad4b7194" type="text/javascript"></script>
+        <div>
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="E7FD9D6A">
+            <input type="hidden" name="__SCROLLPOSITIONX" id="__SCROLLPOSITIONX" value="0">
+            <input type="hidden" name="__SCROLLPOSITIONY" id="__SCROLLPOSITIONY" value="0">
+            <input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="w0ikpGQm7SPS1s3VAsS7p/DK0cNUchWmsG0udw0ARD0Cwdb/EMCI+8ol3zLOx5Giavj33klY843GKPxZyICfxmtLsK+OcKiv/qsq2bhjQPPQwSjGgVCJa45fV05k798vjsgx3yoEzs6Siw01pwBtLmYLA+9/4PbCHrNwYsGDbZFM1yIyl/pl9pWrsNWYLu9kCTLuP2xkPsArMn0I20HmNjI+gGfcG01bySFzAtN5jzJ6/G38D6kcTaOnMiq4It2aw6fkmF2nyJBAhfXfwUU6Bgvd1KM9j7wGmhVO1VFz0iivdelxSkOKccVOM6fG55/2j6O+p1cutvsT0RnqES+kXzqjVLRDPoCx5apUmNdY0Q0=">
+        </div>
+        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager1', 'aspnetForm', [], [], [], 90, 'ctl00');
+//]]>
+        </script>
+
+
+        <div class="container-full">
+
+
+            <table id="ctl00_headercont_masterheaderhide" style="width:100%; height: 80px; background-color:#fff; margin-bottom:0px;  background-image:url('http://docs.ewaybillgst.gov.in/images/log_bg.jpg'); background-size:100% ;
+    background-repeat: no-repeat;">
+                <tbody>
+                    <tr>
+                        <td class="text-left" style="width:20%; padding-left:10px"><img id="ctl00_headercont_Image1" src="http://docs.ewaybillgst.gov.in/Images/ind.png" style="height:70px;width:60px;border-width:0px;"></td>
+                        <td class="text-center" style="width:60%"><span style="font-size:30px;font-family: Algerian">e - Way Bill System</span></td>
+                        <td class="text-right" style="width:20%"> <img id="ctl00_headercont_Image2" src="http://docs.ewaybillgst.gov.in/Images/catx_logo.png" style="height:70px;width:170px;border-width:0px;"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+            <table id="ctl00_headercont_masterheaderhide1" style="width:100%;" class="modultitle">
+                <tbody>
+                    <tr>
+                        <td class="pull-left">
+
+                            <ul class="nav navbar-nav navbarmodultitle">
+
+                                <li>  <a id="ctl00_headercont_lnk_home" class="glyphicon glyphicon-home" href="../mainmenu.aspx"></a></li>
+                                <li><a href="#" class="glyphicon glyphicon-user"></a></li>
+
+                            </ul>
+                        </td>
+                        <td class="text-center"><span id="ctl00_headercont_user_log_details">GSTIN :27AAACN1163G1ZR - Name : NAVBHARAT CLEARING AGENTS PVT.LTD. - User : Transporter</span></td>
+                        <td class="pull-right">
+                            <ul class="nav navbar-nav navbarmodultitle">
+
+
+
+
+
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle glyphicon glyphicon-question-sign" data-toggle="dropdown" href="#">
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#" data-toggle="modal" data-target="#reg_notebox1"><span style="color:Gray; font-size:12px" "=" ">Registering</span></a></li>
+
+                                        <li><a href="#" data-toggle="modal" data-target="#policy"><span style="color:Gray; font-size:12px" "=" ">Generating e-Waybill</span></a></li>
+                                        <li><a href="#" target="_blank" rel="noopener noreferrer"><span style="color:Gray; font-size:12px">Generating Trip Sheet</span></a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#outwardbox1"><span style="color:Gray; font-size:12px" "=" ">Other Modes</span></a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#showpopup1"><span style="color:Gray; font-size:12px" "=" ">Managing Users</span></a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#showpopup1"><span style="color:Gray; font-size:12px" "=" ">Security Policy</span></a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#inwardbox1"><span style="color:Gray; font-size:12px" "=" ">FAQs</span></a></li>
+                                    </ul>
+                                </li>
+                                <li> <a href="#" class="glyphicon glyphicon-phone-alt" data-toggle="modal" data-target="#contact"> </a></li>
+
+                                <li>
+                                    <a id="ctl00_headercont_lnk_Signout" href="javascript:__doPostBack('ctl00$headercont$lnk_Signout','')"> <span class="glyphicon  glyphicon-off"></span>    </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <div class="row container-full " style="background-color: #F2F2F2;">
+
+
+
+                <script type="text/javascript" src="../JS/qrcode.js"></script>
+                <script type="text/javascript" src="../JS/jquery-barcode.min.js"></script>
+                <script type="text/javascript">
+        $(document).ready(function () {
+            generateQRCode();
+            generatebarcode();
+        });
+        function generateQRCode() {
+
+            var typeNumber = 4;
+            var errorCorrectionLevel = 'L';
+            var qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(document.getElementById('qrCodeGen').value);
+            qr.make();
+            document.getElementById('plBarCodeNew').innerHTML = qr.createImgTag(4, 2);
+
+
+        }
+        function generatebarcode() {
+
+            $("#barcode").barcode(document.getElementById('barcodeGen').value, "code93");
+
+        }
+                </script>
+                <style type="text/css">
+                    .pagelayout {
+                        width: 1000px;
+                        margin: 10px auto;
+                    }
+
+                    .table_css {
+                        width: 1000px;
+                        margin: 10px auto;
+                        line-height: 30px;
+                    }
+
+                    .table_css1 {
+                        width: 1000px;
+                        margin: 0px auto;
+                    }
+
+                    .title_gov {
+                        text-align: center;
+                        font-family: Verdana;
+                        font-size: 16px;
+                    }
+
+                    .title_dep {
+                        text-align: center;
+                        font-family: Verdana;
+                        font-size: 20px;
+                    }
+
+                    .title_model {
+                        text-align: center;
+                        font-family: Verdana;
+                        font-size: 20px;
+                        font-weight: bold;
+                    }
+
+                    .title_rule {
+                    }
+
+                    .borderless td, th {
+                        border: none;
+                    }
+
+                    .box {
+                        width: 200px;
+                        border: 1px solid gray;
+                    }
+
+                    .gvtables th {
+                        background-color: #CBE9FE;
+                        color: #167EC6;
+                    }
+
+                    .gvtables {
+                        border: solid 1px #4d4d4d !important;
+                    }
+
+                        .gvtables tr {
+                            border: solid 1px #4d4d4d !important;
+                        }
+
+                        .gvtables td {
+                            border: 10px solid #4d4d4d !important;
+                        }
+
+                    .table_css {
+                        border-bottom: 0px !important;
+                    }
+
+                        .table_css th, .table_css td {
+                            border: 1px !important;
+                        }
+
+                    .fixed-table-container {
+                        border: 0px !important;
+                    }
+
+                    .nav a:hover:not(.active) {
+                        color: #fff;
+                        background-color: transparent;
+                    }
+
+                    @media Print {
+                        .btnprint {
+                            display: none;
+                        }
+
+                        .modultitle {
+                            display: none;
+                        }
+
+                        .headertable {
+                            display: none;
+                        }
+
+                        .QRHeader {
+                            display: block;
+                            width: 1000px;
+                            margin: 0 auto;
+                        }
+
+                        #ctl00_masterheaderhide {
+                            display: none !important;
+                        }
+
+                        #ctl00_masterheaderhide1 {
+                            display: none !important;
+                        }
+
+                        .headingbg {
+                            display: none !important;
+                        }
+                    }
+
+
+                    .Watermark {
+                        width: 450px;
+                        height: 500px;
+                        display: block;
+                        position: absolute;
+                        left: 35%;
+                        top: 45%;
+                    }
+
+                    .form-control1 {
+                        font-weight: bold;
+                    }
+
+                    @font-face {
+                        font-family: "Rupee";
+                        font-style: normal;
+                        font-weight: normal;
+                        src: url("../JS/Rupee_Foradian.ttf");
+                    }
+
+
+
+                    .classfont {
+                        font-family: RUPEE;
+                    }
+
+
+                    .navbarmodultitle a {
+                        color: #fff;
+                    }
+
+                    .list-group a {
+                        color: #1575a8;
+                    }
+
+                    .modultitle {
+                        background-color: #3d8eb9;
+                        color: #fff;
+                        text-align: center;
+                        border-bottom: 1px solid #fff;
+                        margin-bottom: 0px;
+                        margin-top: 0px;
+                        height: 30px;
+                    }
+
+                    .navbarmodultitle {
+                        height: 20px;
+                        min-height: inherit;
+                        margin-top: -10px;
+                    }
+
+                    .boxheight {
+                        min-height: 100px;
+                    }
+
+
+                    .form-control1 {
+                        width: 400px;
+                        min-height: 30px;
+                        max-height: 900px;
+                        height: auto;
+                    }
+                </style>
+                <script type="text/javascript">
+        function expandtext(expand) {
+            while (expand.rows > 1 && expand.scrollHeight < expand.offsetHeight) {
+
+            }
+        }
+                </script>
+
+                <div class="pagelayout ">
+                    <input type="hidden" name="ctl00$ContentPlaceHolder1$Hdn_Transgstin" id="ctl00_ContentPlaceHolder1_Hdn_Transgstin">
+                    <img id="ctl00_ContentPlaceHolder1_img_watermark" class="Watermark" src="../Images/cnl.png" align="middle" style="border-width:0px;">
+
+                    <div class="headingbg text-center" style="margin-top: 0px">
+                        <span id="ctl00_ContentPlaceHolder1_lbl_maintitle">Print e-Way Bill / Slip</span>
+                    </div>
+                    <table class="table_css table borderless " border="0">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <input name="ctl00$ContentPlaceHolder1$mytoken" type="hidden" id="mytoken" value="a6072a30-a903-4164-bd8d-8762bee8fd3d">
+
+                                    <table id="ctl00_ContentPlaceHolder1_QRcode" border="0" class="QRHeader" style="width: 500px; margin: 0 auto">
+                                        <tbody>
+                                            <tr>
+                                                <td class=" text-center" style="width: 500px">
+
+                                                    <span class="title_model">
+                                                        <span id="ctl00_ContentPlaceHolder1_lbl_title">e-Way Bill</span>
+                                                    </span>
+                                                    <div style="height: 2px"></div>
+
+                                                    <input name="ctl00$ContentPlaceHolder1$qrCodeGen" type="hidden" id="qrCodeGen" value="211013809261/27AAACN1163G1ZR/6/5/2018 6:18:00 PM">
+                                                    <input name="ctl00$ContentPlaceHolder1$barcodeGen" type="hidden" id="barcodeGen" value="211013809261">
+                                                    <div id="plBarCodeNew"><img src="data:image/gif;base64,R0lGODdhiACIAIAAAAAAAP///ywAAAAAiACIAAAC/4yPqcvtD6OctNqLs86g+w+GIiICWMl85PiU7mse8Ayu4ckqqpw39B8zAGm22gW12Al7qSGs6OwhLdOEMlBtRqtXSnfD9WiNy84YZ+alqeINtF0OWqXw+bpy/Ur0HPr9fcfHB5FX52UI5icHKCeIuFdX+FJEmbTllqXW+KRZGRcW+Ih1mXhjGTrZqfqp6GnnhMm0Opoa5zpzK7q1eCRrqwm6ieqSa/oLGXV2Kkw8K9l8TEsmfZi8rMxqTO3MGR1cDXstnj39zGgOHCk6NoT9eq4+DC+fXrvtsMtYDH3fj8v9wxU7IPoA8kNHDqG0f9EGBqzHbF5Eg98gVsRHity+i//9wLnb53EWyF702PwRaTBkw5QkJ5rktdLbunEdWb4UOMHRSZk7fcSD6W8mxmG7FBr9OZIns6I/mZYM+vRo1KZOJbazCdVl1qQLq1rMuBWrVK3PnAJ1466srrVEhaJ9i4ysr5pKB8G9SwgpxI8U3eL9+65vT51L/cK9qkNvXLWDu3VtbI8xP655tWVKSBXywcyTsVYuN5fhY6CiJV8Ou5izQ9DaJOLUuLeF4cSWFYkGdzqY3ZgRdHM+/Tm3bbe7fdY+TqSlcOTFi68uiLl1TscbFaPluNq3dNqkVaPUgH1Zaeo0qz+NhTy449vlBWtFz/rsV+ZzXwdOrRmx8e72oN//7z3baNmRx92A+bElX4HTbTcaewpyt9w09vE1lITzdfbgKxESZqCFdVn3WYiyMQiceARmpZCIFap3YE8dchgbbxT+95yJLtqIIYogjpggXRoi6NyFd4UHIUEx+piikIe1wqN+RKL2I4NoxMdicrDxlmR0PeK2Y5EPXYlklzq2FZl1QSpVY4UR+uekmQFmKWCToXmn5VgT0kRYcydKZpWb5/FoX4lawjckk14W9mWYUi64JaNwameloh7iEWCVgQ6XaJ6VtgeeoVEiGqmmLZoF6pmfjpWPWKTSt6ianprF1aqsTlolqmDZuqpryr3qFZqA7jqqipT+6auM3wFIYn3H/woLY7H7TSlqj6ZSpuqNxroa7K83HWvnsu51CFic10I5o3n85QgfnNRmmNac/S2ZnrY+3vnhqNM6Kua6yDYa16XWZAjrkeW25G84APcq7rPwvnfhmg2vp+y4Kkmqn7lttkqjZ0qOezG/DW6KpZjjWftxvPjRKq++I0trpMQbD3tuwU/2Sex+Dodc84u/EefuuRw1Oy+OkOqZrL1+xuztoUPzXLTPvGpG76mYogymzBGPuRmZk+IaqqdRm/Z0jlyv/CjTpYZ9M9Zki2w2zXK962yqYAJttdEkpxl0v9z2jLeuL6nLaN1IHwousAxvi/PWQC6OMd73HpxtvYPD7F+hTP9NnDbmV0MLFrN8EyzwwnLvW3nSClcteufhyrsym2HXuvnCfmPtes4P3y37y3weCXidIPehNde1Hy510wFD/rbiwaPNdq54Hg10x8PrnGisdP4nPe+MF9XuVE27bW7BU1r6PO6Je07y43knrO+MRBMf9cCoOyvs1/maLj/7Gq/IKfZt6/4/yf1sZ5k62uzeZ7HX3S5ryTtgANWmQN+VyXtns13cWgal42WQgA00HdjMtz5Tjc2AHuTgxPJnvQl2kH+DClzKWGfCarFseSBEoAsFSMLEVSx05ytFBVdIMQyWroedoiEQo+Ug/REReD9ModOqx0NJEQp0c7veCXHUt/1QkU57WhufnCLnPxCG71tUtNn2uuexMUrOi9h64uRkBSry4RBuJYsU9bqGsQH+q3h2FNqtrqZHg/ExiW5bW/qYB0UJomt1jGykIx8JyUhmoAAAOw==" width="136" height="136"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <table id="ctl00_ContentPlaceHolder1_table_details" class="table_css table borderless " border="0" style="width: 590px">
+                        <tbody>
+                            <tr>
+                                <td style="width: 200px">
+                                    <span id="ctl00_ContentPlaceHolder1_lblBillNo">E-Way Bill No:</span>
+                                </td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblBillNoDetails" style="font-size:18px;font-weight:bold;"> 2110  1380  9261</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblGenDate">E-Way Bill Date:</span>
+                                </td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblGenDateDetails" style="font-weight:bold;">05/06/2018 06:18 PM</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lglGen">Generated By:</span>
+                                </td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblGenDetails" style="font-weight:bold;"> 27AAA  CN116  3G1ZR   -   NAVBHARAT CLEARING AGENTS PVT.LTD.</span>
+                                </td>
+                            </tr>
+                            <tr id="ctl00_ContentPlaceHolder1_validate">
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_Label1">Valid From:</span>
+                                </td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblValidFrom" style="font-weight:bold;">05/06/2018 06:18 PM</span>
+                                </td>
+                            </tr>
+                            <tr id="ctl00_ContentPlaceHolder1_validate1">
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_Label2">Valid Until:</span>
+                                </td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblValidTo" style="font-weight:bold;">06/06/2018     </span>
+                                </td>
+                            </tr>
+                            <tr style="border-top: 2px solid Gray">
+                                <td class="bg-primary" colspan="2" style="height: 20px; font-weight: bold;">Part - A</td>
+                            </tr>
+                            <tr>
+                                <td>GSTIN of Supplier</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lbl_gstnSupplier" style="font-weight:bold;">URP            ,HALLIBURTON ENERGY SERVICES INC</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Place of Dispatch</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lbl_placeDispatc" style="font-weight:bold;">,OTHER COUNTRIES-999999</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>GSTIN of Recipient</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_txtSypplyTo" style="font-weight:bold;">
+                                        GSTIN : 27AAA  CB046  6A1ZB
+                                        ,HALLIBURTON TECHNOLOGY INDIA PVT LTD
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Place of Delivery</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblDeli"><span style="font-weight:bold;">PUNE,MAHARASHTRA-412216 </span> </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Document No.</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblDocDet"><span style="font-weight:bold;">5846625 </span> </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Document Date</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblDocDt"><span style="font-weight:bold;">04/04/2018 </span> </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Value of Goods</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblVG" class="classfont" style="font-weight:bold;">` 101.8</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>HSN Code</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblhsncode" class="form-control1" onkeydown="expandtext(this);" style="font-weight:bold;">3824 -  987118, CHEM, FDP-S1207-15, 1 PINT SAMPLE (1 NOS) (SAMPLE)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Reason for Transportation</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblTypeDetails" style="font-weight:bold;">Inward  -  Import</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Transporter</td>
+                                <td>
+                                    <span id="ctl00_ContentPlaceHolder1_lblTransportor" style="font-weight:bold;">27AAACN1163G1ZR   &amp;   NAVBHARAT CLEARING AGENTS PVT.LTD.</span>
+                                </td>
+                            </tr>
+                            <tr id="ctl00_ContentPlaceHolder1_emptyVeh1" style="border-top: 2px solid Gray">
+                                <td class="bg-primary" colspan="2" style="height: 25px; font-weight: bold;">Part - B</td>
+                            </tr>
+                            <tr id="ctl00_ContentPlaceHolder1_emptyGV">
+                                <td colspan="2">
+
+                                    <div>
+                                        <table cellspacing="0" cellpadding="3" rules="all" class="table  table-responsive   gvtables  " border="1" id="ctl00_ContentPlaceHolder1_GVVehicleDetails" style="font-size:11px;border-collapse:collapse;">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="col">Mode</th>
+                                                    <th scope="col">Vehicle / Trans <br> Doc No &amp; Dt.</th>
+                                                    <th scope="col">From</th>
+                                                    <th scope="col">Entered Date</th>
+                                                    <th scope="col">Entered By</th>
+                                                    <th scope="col">CEWB No. <br> (If any)</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>Road</td>
+                                                    <td>
+                                                        GJ11QQ4166
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>05/06/2018 06:18 PM</td>
+                                                    <td>27AAACN1163G1ZR</td>
+                                                    <td>
+                                                        -
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                </td>
+                            </tr>
+                            <tr id="ctl00_ContentPlaceHolder1_trbarcdoe">
+                                <td colspan="2" class="text-center" style="text-align: center">
+                                    <div id="barcode" style="margin-left: 35%; padding: 0px; overflow: auto; width: 165px;"><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 10px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 4px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 4px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 4px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 3px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 4px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 10px"></div><div style="clear:both; width: 100%; background-color: #FFFFFF; color: #000000; text-align: center; font-size: 10px; margin-top: 5px;">211013809261</div></div>
+                                </td>
+                            </tr>
+                            <tr id="ctl00_ContentPlaceHolder1_printtr" style="border-top: 2px solid Gray">
+                                <td colspan="3" class="text-center">
+                                    <a href="Javascript:window.print()" class="btn btn-primary btnprint">Print</a>
+                                    <input type="submit" name="ctl00$ContentPlaceHolder1$btn_detail" value="Detailed Print" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolder1$btn_detail&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" id="ctl00_ContentPlaceHolder1_btn_detail" class="btn btn-primary btnprint">
+
+                                    <a href="../mainmenu.aspx" class=" btn btn-danger btnprint">Exit</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br>
+                    <br>
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+            </div>
+            <nav class="navbar-inverse navbar-fixed-bottom" style="height: 30px;width:100%; background-color:#4e0000; margin-bottom:0px; background-image:url('http://docs.ewaybillgst.gov.in/images/log_bg.jpg'); background-size:100% ;
+    background-repeat: no-repeat;">
+                <ul class="nav navbar-nav navbar-right" style="color: #fff; height: 30px; padding-right: 20px;">
+                    <li>
+                        <span class="glyphicon  glyphicon-copyright-mark"></span>Powered By National Informatics Centre
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+        <div class="modal" id="contact" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            ×
+                        </button>
+                        <h4 class="modal-title">
+                            Contact Details
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-condensed table-hover table-responsive">
+                            <tbody>
+                                <tr><td>State</td><td><span id="ctl00_lblState"></span></td></tr>
+                                <tr>
+                                    <td>Contact No</td>
+                                    <td>
+                                        <textarea name="ctl00$lblContactNo" rows="2" cols="20" readonly="readonly" id="ctl00_lblContactNo" style="border-style:None;height:100px;"></textarea>
+                                    </td>
+                                </tr>
+                                <tr><td>Email</td><td><span id="ctl00_lblEmail"></span></td></tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script type="text/javascript">
+//<![CDATA[
+
+theForm.oldSubmit = theForm.submit;
+theForm.submit = WebForm_SaveScrollPositionSubmit;
+
+theForm.oldOnSubmit = theForm.onsubmit;
+theForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;
+
+theForm.oldOnLoad = window.onload;
+window.onload = WebForm_RestoreScrollPosition;
+//]]>
+        </script>
+    </form>
+
+
+</body>
+</html>

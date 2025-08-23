@@ -1,0 +1,191 @@
+﻿<html>
+<head>
+    <title></title>
+    <style>
+        p {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        font {
+            color: black;
+        }
+
+        .topTr {
+            border: 2px solid darkgray;
+            border-bottom: none;
+            bEditID: r3st1;
+            color: white;
+            bLabel: main;
+            font-size: 12pt;
+            font-family: calibri;
+            height: 2px;
+            background-color: #268CD8;
+        }
+
+        .MeetingTitle {
+            font-size: 17px;
+            text-align: right;
+            font-weight: 600;
+            color: #268CD8;
+        }
+
+        .MeetingDate {
+            font-size: 13px;
+            text-align: right;
+            color: black;
+            font-weight: 400;
+        }
+
+        .csTitle {
+            color: #268CD8;
+        }
+
+        .AgendaHdr {
+            padding: 7px;
+            background-color: #268CD8;
+            color: white;
+            font-weight: 500;
+        }
+
+        .AgendaBody {
+            padding: 7px;
+            color: black;
+            font-weight: 400;
+        }
+
+        .AgendaBodySL {
+            padding: 5px;
+            color: black;
+            font-weight: 400;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class='setupTab' style='bEditID:b1st1; bLabel:body;'>
+    <center>
+        <table cellpadding='0' width='850' cellspacing='0' id='topTable' height='300'>
+            <tr valign='top'>
+                <td styleInsert='1' height='150' style='border:2px solid darkgray; border-radius: 6px; bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:calibri;'>
+                    <table border='0' cellpadding='5' width='850' cellspacing='5' height='150' style='padding:10px'>
+                        <tr>
+                            <td class='MeetingTitle'>
+                                @MeetingTitle
+                                <br />
+                                <span class='MeetingDate'>
+                                    @MeetingDate at @MeetingTime
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td styleInsert='1' style='border-bottom:2px solid #268CD8'></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class='subtle-wrap' style='box-sizing: border-box; padding: 5px 10px 20px; margin-top: 2px;'>
+                                    <div class='content-body article-body' style='box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;'>
+                                        <p style='color: rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;'>
+                                            <table border='0' cellpadding='0' cellspacing='0' width='99%'>
+                                                <colgroup>
+                                                    <col width='50%' />
+                                                    <col width='50%' />
+                                                </colgroup>
+                                                <tr>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>Client : </b>
+                                                        &nbsp;<u>@Client</u>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>Start Time : </b>
+                                                        &nbsp;<u>@StartTime</u>
+                                                    </td>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>End Time : </b>
+                                                        &nbsp;<u>@EndTime</u>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>Participants : </b>
+                                                        &nbsp;<u>@Participants</u>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>Resources : </b>
+                                                        &nbsp;<u>@Resources</u>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>Observers : </b>
+                                                        &nbsp;<u>@Observers	</u>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='color: black; padding: 4px'>
+                                                        <b class='csTitle'>Special Notes : </b>
+                                                        &nbsp;<u>@SpecialNotes	</u>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class='subtle-wrap' style='box-sizing: border-box; padding: 5px 10px 20px; margin-top: 2px;'>
+                                    <div class='content-body article-body' style='box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;'>
+                                        <p style='color: rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;'>
+                                            <table border='1' cellpadding='0' cellspacing='0' width='99%'>
+                                                <colgroup>
+                                                    <col width='5%' />
+                                                    <col width='30%' />
+                                                    <col width='45%' />
+                                                    <col width='20%' />
+                                                </colgroup>
+                                                <tr>
+                                                    <td class='AgendaHdr'>Sr.No.</td>
+                                                    <td class='AgendaHdr'>Agenda</td>
+                                                    <td class='AgendaHdr'>Description</td>
+                                                    <td class='AgendaHdr'>Presenter</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="AgendaBodySL">1</td>
+                                                    <td class="AgendaBody">Agenda Topic No 1</td>
+                                                    <td class="AgendaBody">Need to discuss CFS Conts Loaded and their estimation</td>
+                                                    <td class="AgendaBody">Rohan Patil</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="AgendaBodySL">2</td>
+                                                    <td class="AgendaBody">Agenda Topic No 2</td>
+                                                    <td class="AgendaBody">Need to discuss CFS Conts Loaded and their estimation</td>
+                                                    <td class="AgendaBody">Rohan Patil</td>
+                                                </tr>
+                                            </table>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td styleInsert='1' height='80' class='topTr' style=''>
+                    <p style='text-align: center; font-weight: 500;font-size: 12pt; padding: 15px;'>
+                        <font style='color:white; padding-top: 10px'>
+                            This is system generated mail, please do not reply to this message via e-mail.
+                        </font>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+    </center>
+</body>
+</html>

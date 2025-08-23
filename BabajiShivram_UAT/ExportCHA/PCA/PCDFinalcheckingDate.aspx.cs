@@ -1,0 +1,1351 @@
+﻿using System;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.IO;
+using System.Text;
+public partial class PCA_PCDFinalcheckingDate : System.Web.UI.Page
+{
+    private static Random _random = new Random();
+    LoginClass LoggedInUser = new LoginClass();
+    int ModuleId = 0;
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        ScriptManager1.RegisterPostBackControl(lnknonreceive);
+        ScriptManager1.RegisterPostBackControl(lnkreceive);
+        ScriptManager1.RegisterPostBackControl(rptDocument); ////billing
+
+        //DropDownList drp = this.Master.FindControl("ddFinYear") as DropDownList;
+        //Session["FinYearId"] = drp.SelectedValue;
+        ViewState["lblDEBITAMT"] = "0";
+        ViewState["lblCREDITAMT"] = "0";
+        ViewState["lblAMOUNT"] = "0";
+
+        if (!IsPostBack)
+        {
+            Session["CHECKED_ITEMS"] = null; //Checkbox
+            Session["JobId"] = null;
+            Label lblTitle = (Label)Page.Master.FindControl("lblTitle");
+            lblTitle.Text = "Pending For Bill Final Check";
+
+            DataFilter1.DataSource = PCDSqlDataSource;
+            DataFilter1.DataColumns = gvNonRecievedJobDetail.Columns;
+            DataFilter1.FilterSessionID = "PCDFinalcheckingDate.aspx";
+            DataFilter1.OnDataBound += new DynamicData_Content_DataFilter.BindDataGridView(DataFilter1_OnDataBound);
+            gvNonRecievedJobDetail.DataBind();
+
+            DataFilter2.DataSource = PCDSqlDataSource1;
+            DataFilter2.DataColumns = gvRecievedJobDetail.Columns;
+            DataFilter2.FilterSessionID = "PCDFinalcheckingDate1.aspx";
+            DataFilter2.OnDataBound += new DynamicData_Content_DataFilter.BindDataGridView(DataFilter2_OnDataBound);
+            gvRecievedJobDetail.DataBind();
+        }
+        if (TabPCDBilling.TabIndex == 0)
+        {
+            if (TabJobDetail.ActiveTabIndex == 0)
+            {
+                lblreceivemsg.Text = "";
+                lblMsgforApproveReject.Text = "";
+                DataFilter1.DataSource = PCDSqlDataSource;
+                DataFilter1.DataColumns = gvNonRecievedJobDetail.Columns;
+                DataFilter1.FilterSessionID = "PCDFinalCheckingDate.aspx";
+                DataFilter1.OnDataBound += new DynamicData_Content_DataFilter.BindDataGridView(DataFilter1_OnDataBound);
+
+            }
+        }
+        if (TabPCDBilling1.TabIndex == 1)
+        {
+            if (TabJobDetail.ActiveTabIndex == 1)
+            {
+                lblreceivemsg.Text = "";
+                lblMsgforApproveReject.Text = "";
+                DataFilter2.DataSource = PCDSqlDataSource1;
+                DataFilter2.DataColumns = gvRecievedJobDetail.Columns;
+                DataFilter2.FilterSessionID = "PCDFinalCheckingDate1.aspx";
+                DataFilter2.OnDataBound += new DynamicData_Content_DataFilter.BindDataGridView(DataFilter2_OnDataBound);
+            }
+        }
+        if (gvNonRecievedJobDetail.Rows.Count == 0)
+        {
+            lblMsgforNonReceived.Text = "No Job Found For Non Recieved file for Bill Final Check!";
+            lblMsgforNonReceived.CssClass = "errorMsg"; ;
+        }
+        else
+        {
+            lblMsgforNonReceived.Text = "";
+        }
+        if (gvRecievedJobDetail.Rows.Count == 0)
+        {
+            lblMsgforReceived.Text = "No Job Found For Recieved file for Bill Final Check!";
+            lblMsgforReceived.CssClass = "errorMsg"; ;
+        }
+        else
+        {
+            lblMsgforReceived.Text = "";
+        }
+
+    }
+
+    #region NonRecieved
+
+    protected void lnkNonreceiveExcel_Click(object sender, EventArgs e)
+    {
+        string strFileName = "FinalCheck_nonreceiveJoblist" + DateTime.Now.ToString("dd/MM/yyyy hh:mm tt") + ".xls";
+        NonreceivejoblistExport("attachment;filename=" + strFileName, "application/vnd.ms-excel");
+    }
+
+    private void NonreceivejoblistExport(string header, string contentType)
+    {
+        Response.Clear();
+        Response.Buffer = true;
+        Response.AddHeader("content-disposition", header);
+        Response.Charset = "";
+        this.EnableViewState = false;
+        Response.ContentType = contentType;
+        StringWriter sw = new StringWriter();
+        HtmlTextWriter hw = new HtmlTextWriter(sw);
+        gvNonRecievedJobDetail.AllowPaging = false;
+        gvNonRecievedJobDetail.AllowSorting = false;
+        gvNonRecievedJobDetail.Caption = "";
+
+        gvNonRecievedJobDetail.Columns[1].Visible = false;
+        gvNonRecievedJobDetail.Columns[11].Visible = false;
+
+        gvNonRecievedJobDetail.DataSourceID = "PCDSqlDataSource";
+        gvNonRecievedJobDetail.DataBind();
+
+        //Remove Controls
+        this.RemoveControls(gvNonRecievedJobDetail);
+
+        gvNonRecievedJobDetail.RenderControl(hw);
+
+        Response.Output.Write(sw.ToString());
+        Response.End();
+    }
+    protected void gvNonRecievedJobDetail_RowCommand(Object sender, GridViewCommandEventArgs e)
+    {
+        lblFAJobNumber.Text = "";
+
+        if (e.CommandName.ToLower().Trim() == "auditremark")
+        {
+            hdnJobId.Value = e.CommandArgument.ToString();
+
+            txtAuditRemark.Text = "";
+            lblError_Audit.Text = "";
+
+            DataSet dsAuditDetails = BillingOperation.GetBJVJobStatus(Convert.ToInt32(hdnJobId.Value), 1);
+
+            if (dsAuditDetails.Tables.Count > 0)
+            {
+                if (dsAuditDetails.Tables[0].Rows.Count > 0)
+                {
+                    if (dsAuditDetails.Tables[0].Rows[0]["JobRefNo"] != DBNull.Value)
+                        lblFAJobNumber.Text = dsAuditDetails.Tables[0].Rows[0]["JobRefNo"].ToString();
+
+                    if (dsAuditDetails.Tables[0].Rows[0]["AuditRemark"] != DBNull.Value)
+                        txtAuditRemark.Text = dsAuditDetails.Tables[0].Rows[0]["AuditRemark"].ToString();
+                }
+
+            }
+
+            AuditModalPopupExtender.Show();
+
+        }
+
+    }
+    protected void gvNonRecievedJobDetail_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+
+        RePopulateValues(); //Checkbox
+
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+
+            Label status1 = (Label)e.Row.FindControl("rulename");
+
+            string status = status1.Text.ToString();
+            if (status == "1")
+            {
+                e.Row.BackColor = System.Drawing.Color.Aqua;
+                e.Row.ToolTip = "FIFO";
+            }
+
+            if (status == "2")
+            {
+                e.Row.BackColor = System.Drawing.Color.Tomato;
+                e.Row.ToolTip = "WEEKDAYS";
+            }
+            if (status == "3")
+            {
+                e.Row.BackColor = System.Drawing.Color.SkyBlue;
+                e.Row.ToolTip = "DAYS";
+            }
+            if (status == "4")
+            {
+                e.Row.BackColor = System.Drawing.Color.Pink;
+                e.Row.ToolTip = "Urgent Bill";
+            }
+
+            if (status == "5")
+            {
+                e.Row.BackColor = System.Drawing.Color.BurlyWood;
+                e.Row.ToolTip = "Quick Paymaster";
+            }
+
+            if (status == "6")
+            {
+                e.Row.BackColor = System.Drawing.Color.Khaki;
+                e.Row.ToolTip = "High Credit Days";
+            }
+            if (status == "7")
+            {
+                e.Row.BackColor = System.Drawing.Color.LightSeaGreen;
+                e.Row.ToolTip = "amount";
+            }
+            if (status == "8")
+            {
+                e.Row.BackColor = System.Drawing.Color.LightSlateGray;
+                e.Row.ToolTip = "User Days";
+            }
+            e.Row.Cells[8].ToolTip = "Today – FSB"; //aging1            
+            e.Row.Cells[9].ToolTip = "Today – FSFC"; //aging2
+                                                     // e.Row.Cells[10].ToolTip = "Today – Clearance Date";//aging3
+            e.Row.Cells[11].CssClass = "hidden"; //rulename
+
+            if (DataBinder.Eval(e.Row.DataItem, "JobType") != DBNull.Value)
+            {
+                string JobType = DataBinder.Eval(e.Row.DataItem, "JobType").ToString();
+                if (JobType != "" && JobType.Trim().ToLower() == "export")
+                {
+                    e.Row.Cells[12].ToolTip = "Today – Document Hand Over To Shipping Line Date.";
+                    e.Row.Cells[8].Text = "";
+                }
+                else if (JobType != "" && JobType.Trim().ToLower() == "additional")
+                {
+                    e.Row.Cells[12].ToolTip = "Today – Job added to additional tab.";
+                    e.Row.Cells[8].Text = "";
+                    e.Row.Cells[9].Text = "";
+                }
+                else
+                {
+                    e.Row.Cells[12].ToolTip = "Today – Clearance Date.";
+                    e.Row.Cells[9].Text = "";
+                }
+            }
+        }
+        if (e.Row.RowType == DataControlRowType.Header)
+        {
+            e.Row.Cells[13].CssClass = "hidden";//rulename
+        }
+    }
+
+    protected void gvNonRecievedJobDetail_PreRender(object sender, EventArgs e)
+    {
+        GridView gv = (GridView)sender;
+        GridViewRow gvr = (GridViewRow)gv.BottomPagerRow;
+        if (gvr != null)
+        {
+            gvr.Visible = true;
+        }
+    }
+
+
+    protected void gvNonRecievedJobDetail_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        RememberOldValues();
+        gvNonRecievedJobDetail.PageIndex = e.NewPageIndex;
+        RePopulateValues();
+
+
+    } //Checkbox
+
+    private void RememberOldValues()
+    {
+        int countRow = 0;
+        ArrayList categoryIDList = new ArrayList();
+        int index = -1;
+        foreach (GridViewRow row in gvNonRecievedJobDetail.Rows)
+        {
+            index = Convert.ToInt32(gvNonRecievedJobDetail.DataKeys[row.RowIndex].Value);
+
+            bool result = ((CheckBox)row.FindControl("chk1")).Checked;
+
+            // Check in the Session
+            if (Session["CHECKED_ITEMS"] != null)
+                categoryIDList = (ArrayList)Session["CHECKED_ITEMS"];
+            if (result)
+            {
+                if (!categoryIDList.Contains(index))
+                    categoryIDList.Add(index);
+            }
+            else
+            {
+                categoryIDList.Remove(index);
+
+                countRow = countRow + 1;
+            }
+            // }
+        }
+        if (categoryIDList != null && categoryIDList.Count > 0)
+            Session["CHECKED_ITEMS"] = categoryIDList;
+
+
+        int countRow1 = countRow;
+
+    } //Checkbox
+
+
+    private void RePopulateValues()
+    {
+
+        ArrayList categoryIDList = (ArrayList)Session["CHECKED_ITEMS"];
+
+        if (categoryIDList != null && categoryIDList.Count > 0)
+        {
+            foreach (GridViewRow row in gvNonRecievedJobDetail.Rows)
+            {
+                int index = Convert.ToInt32(gvNonRecievedJobDetail.DataKeys[row.RowIndex].Value);
+
+                bool result = ((CheckBox)row.FindControl("chk1")).Checked;
+                if (categoryIDList.Contains(index))
+                {
+                    CheckBox myCheckBox = (CheckBox)row.FindControl("chk1");
+                    myCheckBox.Checked = true;
+                }
+                else
+                {
+                    CheckBox myCheckBox = (CheckBox)row.FindControl("chk1");
+                    myCheckBox.Checked = false;
+
+                }
+
+            }
+        }
+        //gvNonRecievedJobDetail.AllowPaging = true;
+    }//Checkbox
+
+    #endregion
+
+    #region Recieved
+    protected void lnkreceiveExcel_Click(object sender, EventArgs e)
+    {
+        string strFileName = "FinalCheck_ReceiveJoblist" + DateTime.Now.ToString("dd/MM/yyyy hh:mm tt") + ".xls";
+        receivejoblistExport("attachment;filename=" + strFileName, "application/vnd.ms-excel");
+    }
+
+    private void receivejoblistExport(string header, string contentType)
+    {
+        Response.Clear();
+        Response.Buffer = true;
+        Response.AddHeader("content-disposition", header);
+        Response.Charset = "";
+        this.EnableViewState = false;
+        Response.ContentType = contentType;
+        StringWriter sw = new StringWriter();
+        HtmlTextWriter hw = new HtmlTextWriter(sw);
+        gvRecievedJobDetail.AllowPaging = false;
+        gvRecievedJobDetail.AllowSorting = false;
+        gvRecievedJobDetail.Caption = "";
+
+        gvRecievedJobDetail.Columns[1].Visible = false;
+        gvRecievedJobDetail.Columns[12].Visible = false;
+        gvRecievedJobDetail.Columns[13].Visible = false;
+
+        gvRecievedJobDetail.DataSourceID = "PCDSqlDataSource1";
+        gvRecievedJobDetail.DataBind();
+
+        //Remove Controls
+        this.RemoveControls(gvRecievedJobDetail);
+
+        gvRecievedJobDetail.RenderControl(hw);
+
+        Response.Output.Write(sw.ToString());
+        Response.End();
+    }
+
+    protected void gvRecievedJobDetail_PreRender(object sender, EventArgs e)
+    {
+        GridView gv = (GridView)sender;
+        GridViewRow gvr = (GridViewRow)gv.BottomPagerRow;
+        if (gvr != null)
+        {
+            gvr.Visible = true;
+        }
+    }
+
+    protected void gvRecievedJobDetail_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            Label status1 = (Label)e.Row.FindControl("rulename");
+
+            string status = status1.Text.ToString();
+            if (status == "1")
+            {
+                e.Row.BackColor = System.Drawing.Color.Aqua;
+                e.Row.ToolTip = "FIFO";
+            }
+
+            if (status == "2")
+            {
+                e.Row.BackColor = System.Drawing.Color.Tomato;
+                e.Row.ToolTip = "WEEKDAYS";
+            }
+            if (status == "3")
+            {
+                e.Row.BackColor = System.Drawing.Color.SkyBlue;
+                e.Row.ToolTip = "DAYS";
+            }
+            if (status == "4")
+            {
+                e.Row.BackColor = System.Drawing.Color.Pink;
+                e.Row.ToolTip = "Urgent Bill";
+            }
+
+            if (status == "5")
+            {
+                e.Row.BackColor = System.Drawing.Color.BurlyWood;
+                e.Row.ToolTip = "Quick Paymaster";
+            }
+
+            if (status == "6")
+            {
+                e.Row.BackColor = System.Drawing.Color.Khaki;
+                e.Row.ToolTip = "High Credit Days";
+            }
+            if (status == "7")
+            {
+                e.Row.BackColor = System.Drawing.Color.LightSeaGreen;
+                e.Row.ToolTip = "amount";
+            }
+            if (status == "8")
+            {
+                e.Row.BackColor = System.Drawing.Color.LightSlateGray;
+                e.Row.ToolTip = "User Days";
+            }
+
+            //foreach (DataControlField col in gvRecievedJobDetail.Columns)
+            //{
+            //    if (col.HeaderText == "")
+            //    {
+            //        col.Visible = false;
+            //    }
+            //}
+            e.Row.Cells[14].CssClass = "hidden"; //rulename
+            e.Row.Cells[11].ToolTip = "Today – FSB"; //aging1            
+            e.Row.Cells[12].ToolTip = "Today – FRFC";//aging2
+                                                     // e.Row.Cells[12].ToolTip = "Today – Clearance Date";//aging3
+            e.Row.Cells[15].CssClass = "hidden";
+
+            if (DataBinder.Eval(e.Row.DataItem, "JobType") != DBNull.Value)
+            {
+                string JobType = DataBinder.Eval(e.Row.DataItem, "JobType").ToString();
+                if (JobType != "" && JobType.Trim().ToLower() == "export")
+                {
+                    e.Row.Cells[13].ToolTip = "Today – Document Hand Over To Shipping Line Date.";
+                    e.Row.Cells[8].Text = "";
+                }
+                else if (JobType != "" && JobType.Trim().ToLower() == "additional")
+                {
+                    e.Row.Cells[13].ToolTip = "Today – Job added to additional tab.";
+                    e.Row.Cells[8].Text = "";
+                    e.Row.Cells[9].Text = "";
+                }
+                else
+                {
+                    e.Row.Cells[13].ToolTip = "Today – Clearance Date.";
+                    e.Row.Cells[9].Text = "";
+                }
+            }
+        }
+        if (e.Row.RowType == DataControlRowType.Header)
+        {
+            e.Row.Cells[14].CssClass = "hidden";//rulename
+            e.Row.Cells[15].CssClass = "hidden";
+        }
+    }
+
+    protected void gvRecievedJobDetail_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        string Correct = "";
+
+        if (e.CommandName.ToLower() == "documentpopup" && e.CommandArgument != null)
+        {
+            lblerror.Text = "";
+            lblMsgforReceived.Text = "";
+            lblMsgforNonReceived.Text = "";
+            GridViewRow gvr = (GridViewRow)(((LinkButton)e.CommandSource).NamingContainer);
+            int RowIndex = gvr.RowIndex;
+            ViewState["Currentid"] = RowIndex;
+            string[] commandArgs = e.CommandArgument.ToString().Split(new char[] { ';' });
+            string strCustDocFolder = "", strJobFileDir = "", strCustomer = "", strJobrefno = "", strRMSNONRMS = "";
+            hdnJobId.Value = commandArgs[0].ToString();
+            Session["JobId"] = commandArgs[0].ToString();
+            ViewState["JobId"] = Session["JobId"];
+            if (commandArgs[1].ToString() != "")
+                strCustDocFolder = commandArgs[1].ToString() + "\\";
+            if (commandArgs[2].ToString() != "")
+                strJobFileDir = commandArgs[2].ToString() + "\\";
+
+            if (commandArgs[3].ToString() != "")
+                strCustomer = commandArgs[3].ToString();
+            if (commandArgs[4].ToString() != "")
+                strJobrefno = commandArgs[4].ToString();
+            if (commandArgs[5].ToString() != "")
+                strRMSNONRMS = commandArgs[5].ToString();
+            hdnUploadPath.Value = strCustDocFolder + strJobFileDir;
+            int Uploadtype = Convert.ToInt32(EnumBilltype.FinalInvoiceTyping);
+            //billing
+            rptDocument.DataSource = BillingOperation.FillPCDDocumentForonlineBill(Convert.ToInt32(hdnJobId.Value), Uploadtype);
+            rptDocument.DataBind();
+            
+            rptBJVDetails.DataSource = BillingOperation.FillBJVDetails(Convert.ToInt32(hdnJobId.Value));
+            rptBJVDetails.DataBind();
+
+            ModalPopupDocument.Show();
+            Label label1 = rptDocument.Controls[0].FindControl("lbljobrefno2") as Label;
+            label1.Text = strJobrefno;
+            Label label2 = rptDocument.Controls[0].FindControl("lblcustomer2") as Label;
+            label2.Text = strCustomer;
+            //Label label3 = rptDocument.Controls[0].FindControl("lblRMSNonRms2") as Label;
+            //label3.Text = strRMSNONRMS;
+        }
+
+        else if (e.CommandName.ToLower() == "reject" && e.CommandArgument != null)
+        {
+            lblMsgforReceived.Text = "";
+            lblerror.Text = "";
+
+            ViewState["JobId"] = e.CommandArgument.ToString();
+
+            LinkButton btnsubmit = sender as LinkButton;
+            Session["status"] = "Reject";
+            this.ModalPopupExtender1.Show();
+
+            foreach (RepeaterItem ri in rpReason.Items)
+            {
+                CheckBox chkreason = (CheckBox)ri.FindControl("chkreasonofpendency");
+                TextBox txtreason = (TextBox)ri.FindControl("txtReason");
+                DropDownList Drplrdctype = (DropDownList)ri.FindControl("Drplrdctype");
+                Label lbltype = (Label)ri.FindControl("lbltype");
+                Label lblReason = (Label)ri.FindControl("lblReason");
+                Label lblmailto = (Label)ri.FindControl("lblmailto");
+                TextBox txtUser = (TextBox)ri.FindControl("txtUser");
+                HiddenField hnduserid = (HiddenField)ri.FindControl("hdnUserId");
+
+                txtUser.Visible = true;
+                lblmailto.Visible = true;
+                txtUser.Text = "";
+                hnduserid.Value = "";
+
+                if (chkreason.Checked == true)
+                {
+                    chkreason.Checked = false;
+                    txtreason.Text = "";
+                    Drplrdctype.SelectedIndex = 0;
+                }
+            }
+            
+        }
+
+        else if (e.CommandName.ToLower() == "tick" || e.CommandName.ToLower() == "cross")
+        {
+            lblMsgforReceived.Text = "";
+            lblerror.Text = "";
+
+            int rowIndex = Convert.ToInt32(e.CommandArgument);
+
+            TextBox txtremarks = gvRecievedJobDetail.Rows[rowIndex].FindControl("txtRemarks") as TextBox;
+
+
+            int id = Convert.ToInt32(this.gvRecievedJobDetail.DataKeys[rowIndex]["JobId"]);
+
+            if (e.CommandName.ToLower() == "tick")
+            {
+                Correct = "1";
+            }
+            else
+            {
+                Correct = "0";
+
+                if (txtremarks.Text == "")
+                {
+                    lblMsgforApproveReject.Text = "Plase Enter Remark.";
+                    lblMsgforApproveReject.CssClass = "errorMsg";
+                    return;
+                }
+            }
+
+            int result = 0;
+            lblerror.Text = "";
+            int reasonforPendency = 0;
+            string interests = string.Empty;
+
+            bool bApprove = true;
+            result = BillingOperation.ApproveRejectFinalChecking(Convert.ToInt32(id), bApprove, txtremarks.Text, reasonforPendency, Correct, "", 0, LoggedInUser.glUserId, ModuleId);
+            if (result == 0)
+            {
+                if (Correct == "1")
+                {
+                    lblMsgforApproveReject.Text = "Final Invoice Check Completed! Job Moved To Bill Dispatch!.";
+                }
+                else
+                {
+                    lblMsgforApproveReject.Text = "Final Invoice Check Completed! Job Moved To Final typing!.";
+                }
+
+                lblMsgforApproveReject.CssClass = "success";
+                gvRecievedJobDetail.DataBind();
+            }
+            else if (result == 1)
+            {
+                lblMsgforApproveReject.Text = "System Error! Please try after sometime.";
+                lblMsgforApproveReject.CssClass = "errorMsg";
+            }
+            else if (result == 2)
+            {
+                lblMsgforApproveReject.Text = "Final Invoice Check Already Completed!";
+                lblMsgforApproveReject.CssClass = "errorMsg";
+            }
+
+        }
+        else if (e.CommandName.ToLower().Trim() == "auditremark")
+        {
+            lblFAJobNumber.Text = "";
+            hdnJobId.Value = e.CommandArgument.ToString();
+
+            txtAuditRemark.Text = "";
+            lblError_Audit.Text = "";
+
+            DataSet dsAuditDetails = BillingOperation.GetBJVJobStatus(Convert.ToInt32(hdnJobId.Value), 1);
+
+            if (dsAuditDetails.Tables.Count > 0)
+            {
+                if (dsAuditDetails.Tables[0].Rows.Count > 0)
+                {
+                    if (dsAuditDetails.Tables[0].Rows[0]["JobRefNo"] != DBNull.Value)
+                        lblFAJobNumber.Text = dsAuditDetails.Tables[0].Rows[0]["JobRefNo"].ToString();
+
+                    if (dsAuditDetails.Tables[0].Rows[0]["AuditRemark"] != DBNull.Value)
+                        txtAuditRemark.Text = dsAuditDetails.Tables[0].Rows[0]["AuditRemark"].ToString();
+                }
+
+            }
+
+            AuditModalPopupExtender.Show();
+
+        }
+    }
+
+    protected void rpDocument_ItemDataBound(Object Sender, RepeaterItemEventArgs e)
+    {
+        if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+        {
+            CheckBoxList chkDuplicate = (CheckBoxList)e.Item.FindControl("chkDuplicate");
+            CustomValidator CVCheckBoxList = (CustomValidator)e.Item.FindControl("CVCheckBoxList");
+            //chkDuplicate.Items[1].Selected = Convert.ToBoolean(DataBinder.Eval(e.Item.DataItem, "IsCopy"));
+            //chkDuplicate.Items[0].Selected = Convert.ToBoolean(DataBinder.Eval(e.Item.DataItem, "IsOriginal"));
+            //chkDuplicate.Items[1].Enabled = false;
+            //chkDuplicate.Items[0].Enabled = false;
+        }
+    }
+    //billing
+    protected void rpDocument_ItemCommand(Object Sender, RepeaterCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower() == "view")
+        {
+            string DocPath = e.CommandArgument.ToString();
+            DownloadDocument(DocPath);
+            ModalPopupDocument.Show();
+        }
+    }
+
+    private void DownloadDocument(string DocumentPath)
+    {
+        String ServerPath = FileServer.GetFileServerDir();
+
+        if (ServerPath == "")
+        {
+            ServerPath = HttpContext.Current.Server.MapPath("..\\UploadFiles\\" + DocumentPath);
+        }
+        else
+        {
+            ServerPath = ServerPath + DocumentPath;
+        }
+        try
+        {
+            HttpResponse response = Page.Response;
+            FileDownload.Download(response, ServerPath, DocumentPath);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void rptBJVDetails_ItemDataBound(Object Sender, RepeaterItemEventArgs e)
+    {
+        if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+        {
+            //gives the sum in string Total.        
+            Label lblDEBITAMT = ((Label)e.Item.FindControl("lblDEBITAMT"));
+            if (lblDEBITAMT.Text != "")
+            {
+                ViewState["lblDEBITAMT"] = Convert.ToInt64(ViewState["lblDEBITAMT"]) + int.Parse(lblDEBITAMT.Text);
+            }
+
+            //Label lblCREDITAMT = ((Label)e.Item.FindControl("lblCREDITAMT"));
+            //ViewState["lblCREDITAMT"] = Convert.ToInt64(ViewState["lblCREDITAMT"]) + int.Parse(lblCREDITAMT.Text);
+
+            //Label lblAMOUNT = ((Label)e.Item.FindControl("lblAMOUNT"));
+            //ViewState["lblAMOUNT"] = Convert.ToInt64(ViewState["lblAMOUNT"]) + int.Parse(lblAMOUNT.Text);
+
+
+        }
+        else if (e.Item.ItemType == ListItemType.Footer)
+        {
+            ((Label)e.Item.FindControl("lbltotDebitamt")).Text = ViewState["lblDEBITAMT"].ToString();
+            //((Label)e.Item.FindControl("lbltotCREDITAMT")).Text = ViewState["lblCREDITAMT"].ToString();
+            //((Label)e.Item.FindControl("lbltotAMOUNT")).Text = ViewState["lblAMOUNT"].ToString();
+        }
+    }
+
+    protected void rptBJVDetails_ItemCommand(Object Sender, RepeaterCommandEventArgs e)
+    {
+        string Correct = "";
+
+        int JobId = Convert.ToInt32(Session["JobId"]);
+        ViewState["JobId"] = JobId;
+        //int rowIndex = Convert.ToInt32(e.CommandArgument);
+
+        //int rowId = e.Item.ItemIndex;
+
+        if (e.CommandName.ToLower() == "reject" && e.CommandArgument != null)
+        {
+            lblMsgforReceived.Text = "";
+            lblerror.Text = "";
+
+            //ViewState["JobId"] = e.CommandArgument.ToString();
+
+            // LinkButton btnsubmit = sender as LinkButton;
+
+            Label lblJobRefNo = rptDocument.Controls[0].FindControl("lbljobrefno2") as Label;
+            Session["JobRefNo"] = lblJobRefNo.Text;
+
+            Session["status"] = "Reject";
+            this.ModalPopupExtender1.Show();
+
+            foreach (RepeaterItem ri in rpReason.Items)
+            {
+                CheckBox chkreason = (CheckBox)ri.FindControl("chkreasonofpendency");
+                TextBox txtreason = (TextBox)ri.FindControl("txtReason");
+                DropDownList Drplrdctype = (DropDownList)ri.FindControl("Drplrdctype");
+                Label lbltype = (Label)ri.FindControl("lbltype");
+                Label lblReason = (Label)ri.FindControl("lblReason");
+                Label lblmailto = (Label)ri.FindControl("lblmailto");
+                TextBox txtUser = (TextBox)ri.FindControl("txtUser");
+                HiddenField hnduserid = (HiddenField)ri.FindControl("hdnUserId");
+
+                txtUser.Visible = true;
+                lblmailto.Visible = true;
+                txtUser.Text = "";
+                hnduserid.Value = "";
+
+                if (chkreason.Checked == true)
+                {
+                    chkreason.Checked = false;
+                    txtreason.Text = "";
+                    Drplrdctype.SelectedIndex = 0;
+                }
+            }
+
+
+        }
+
+        if (e.CommandName.ToLower() == "tick" || e.CommandName.ToLower() == "cross")
+        {
+            lblMsgforReceived.Text = "";
+            lblerror.Text = "";
+
+
+
+            //TextBox txtremarks = gvRecievedJobDetail.Rows[rowIndex].FindControl("txtRemarks") as TextBox;
+
+            TextBox txtremarks = e.Item.FindControl("txtRemarks") as TextBox;
+            Label lblremark = e.Item.FindControl("lblRemarks") as Label;
+            Label Label1 = e.Item.FindControl("Label1") as Label;
+            Label lblJobRefNo = rptDocument.Controls[0].FindControl("lbljobrefno2") as Label;
+            Session["JobRefNo"] = lblJobRefNo.Text;
+            if (e.CommandName.ToLower() == "tick")
+            {
+                Correct = "1";
+                lblremark.Visible = false;
+                txtremarks.Visible = false;
+                Label1.Visible = false;
+
+            }
+            else
+            {
+                if (lblremark.Visible != true)
+                {
+                    lblremark.Visible = true;
+                    txtremarks.Visible = true;
+                    Label1.Visible = true;
+                    ModalPopupDocument.Show();
+                    return;
+                }
+                Correct = "0";
+
+                if (txtremarks.Text == "")
+                {
+                    Label1.Text = "Plase Enter Remark.";
+                    Label1.CssClass = "errorMsg";
+                    ModalPopupDocument.Show();
+                    return;
+                }
+            }
+
+            int result = 0;
+            lblerror.Text = "";
+            int reasonforPendency = 0;
+            string interests = string.Empty;
+
+            bool bApprove = true;
+
+            //Session["JobRefNo"] = "";
+            GetModuleId();
+            result = BillingOperation.ApproveRejectFinalChecking(Convert.ToInt32(JobId), bApprove, txtremarks.Text, reasonforPendency, Correct, "", 0, LoggedInUser.glUserId, ModuleId);
+            Session["JobRefNo"] = "";
+            ModuleId = 0;
+
+            if (result == 0)
+            {
+                if (Correct == "1")
+                {
+                    lblMsgforApproveReject.Text = "Final Invoice Check Completed! Job Moved To Bill Dispatch!.";
+                }
+                else
+                {
+                    lblMsgforApproveReject.Text = "Final Invoice Check Completed! Job Moved To Final typing!.";
+                }
+                nextclick();
+                lblMsgforApproveReject.CssClass = "success";
+                gvRecievedJobDetail.DataBind();
+            }
+            else if (result == 1)
+            {
+                lblMsgforApproveReject.Text = "System Error! Please try after sometime.";
+                lblMsgforApproveReject.CssClass = "errorMsg";
+            }
+            else if (result == 2)
+            {
+                lblMsgforApproveReject.Text = "Final Invoice Check Already Completed!";
+                lblMsgforApproveReject.CssClass = "errorMsg";
+            }
+
+        }
+    }
+
+    protected void btnPrevious_click(object sender, EventArgs e)
+    {
+        btnNext.Visible = true;
+        int i = Convert.ToInt16(ViewState["Currentid"]) - 1;
+        int count = gvRecievedJobDetail.Rows.Count - 1;
+        if (i < 0)
+        {
+            i = count;
+        }
+        ViewState["Currentid"] = i;
+
+        string JobId = gvRecievedJobDetail.DataKeys[i].Value.ToString();
+        Session["JobId"] = JobId;
+        string customer = gvRecievedJobDetail.Rows[i].Cells[5].Text.ToString();
+        LinkButton jobrefNo = (LinkButton)gvRecievedJobDetail.Rows[i].FindControl("lnkJobNo");
+        string RmsNonRMS = gvRecievedJobDetail.Rows[i].Cells[12].Text.ToString();
+        int Uploadtype = Convert.ToInt32(EnumBilltype.FinalInvoiceTyping);
+
+        rptDocument.DataSource = BillingOperation.FillPCDDocumentForonlineBill(Convert.ToInt32(JobId), Uploadtype);
+        rptDocument.DataBind();
+
+        rptBJVDetails.DataSource = BillingOperation.FillBJVDetails(Convert.ToInt32(JobId));
+        rptBJVDetails.DataBind();
+        ModalPopupDocument.Show();
+        Label label1 = rptDocument.Controls[0].FindControl("lbljobrefno2") as Label;
+        label1.Text = jobrefNo.Text;
+        Label label2 = rptDocument.Controls[0].FindControl("lblcustomer2") as Label;
+        label2.Text = customer;
+        //Label label3 = rptDocument.Controls[0].FindControl("lblRMSNonRms2") as Label;
+        //label3.Text = RmsNonRMS;
+    }
+
+    protected void btnNext_click(object sender, EventArgs e)
+    {
+        nextclick();
+    }
+
+    public void nextclick()
+    {
+        lblMsgforReceived.Text = "";
+        btnPrevious.Visible = true;
+        int i = Convert.ToInt16(ViewState["Currentid"]) + 1;
+        int count = gvRecievedJobDetail.Rows.Count;
+        if (count == i)
+        {
+            i = 0;
+        }
+        ViewState["Currentid"] = i;
+        string JobId = gvRecievedJobDetail.DataKeys[i].Value.ToString();
+        Session["JobId"] = JobId;
+        string customer = gvRecievedJobDetail.Rows[i].Cells[5].Text.ToString();
+        string RmsNonRMS = gvRecievedJobDetail.Rows[i].Cells[12].Text.ToString();
+        LinkButton jobrefNo = (LinkButton)gvRecievedJobDetail.Rows[i].FindControl("lnkJobNo");
+
+        int Uploadtype = Convert.ToInt32(EnumBilltype.FinalInvoiceTyping);
+        //billing
+        rptDocument.DataSource = BillingOperation.FillPCDDocumentForonlineBill(Convert.ToInt32(JobId), Uploadtype);
+        rptDocument.DataBind();
+
+
+        rptBJVDetails.DataSource = BillingOperation.FillBJVDetails(Convert.ToInt32(JobId));
+        rptBJVDetails.DataBind();
+
+
+        if (count == 1)
+        {
+            ModalPopupDocument.Hide();
+        }
+        else
+        {
+            ModalPopupDocument.Show();
+        }
+        Label label1 = rptDocument.Controls[0].FindControl("lbljobrefno2") as Label;
+        label1.Text = jobrefNo.Text;
+        Label label2 = rptDocument.Controls[0].FindControl("lblcustomer2") as Label;
+        label2.Text = customer;
+        //Label label3 = rptDocument.Controls[0].FindControl("lblRMSNonRms2") as Label;
+        //label3.Text = RmsNonRMS;
+        gvRecievedJobDetail.DataBind();
+    }
+
+    protected void rpReason_ItemDataBound(object sender, RepeaterItemEventArgs e)
+    {
+        TextBox txtUser = (TextBox)e.Item.FindControl("txtUser");
+        int count = 2341;
+        foreach (RepeaterItem ri in rpReason.Items)
+        {
+            AjaxControlToolkit.AutoCompleteExtender UserExtender = (AjaxControlToolkit.AutoCompleteExtender)ri.FindControl("UserExtender");
+
+            //txtUser = (TextBox)ri.FindControl("txtUser"); 
+
+            HtmlControl divwidthCust = (HtmlControl)ri.FindControl("divwidthCust");
+
+            if (txtUser != null)
+            {
+                if (txtUser.Visible != false)
+                {
+                    UserExtender.TargetControlID = txtUser.ClientID;
+                }
+                UserExtender.BehaviorID = divwidthCust.ClientID;
+
+                UserExtender.ContextKey = count.ToString();//LoggedInUser.glUserId.ToString();
+                count = count + 1;
+            }
+        }
+        
+        CheckBox chkReasonType = (CheckBox)e.Item.FindControl("chkreasonofpendency");
+        RequiredFieldValidator RFVRejectReason = (RequiredFieldValidator)e.Item.FindControl("RFVRejectReason");
+        TextBox txtReason = (TextBox)e.Item.FindControl("txtReason");
+        
+        Label lbltype = (Label)e.Item.FindControl("lbltype");
+        DropDownList Drplrdctype = (DropDownList)e.Item.FindControl("Drplrdctype");
+
+        Label lblMailTo = (Label)e.Item.FindControl("lblMailTo");
+
+        HiddenField hdnUserId = (HiddenField)e.Item.FindControl("hdnUserId");
+
+        // Reject Department Category
+        DropDownList cboDDCategory = (DropDownList)e.Item.FindControl("ddCategory");
+        RequiredFieldValidator cboRFVCatgory = (RequiredFieldValidator)e.Item.FindControl("RFVCatgory");
+
+        if (chkReasonType != null && RFVRejectReason != null)
+        {
+            
+            chkReasonType.Attributes.Add("OnClick", "javascript:toggleDiv('" + chkReasonType.ClientID + "','" + cboDDCategory.ClientID + "','" + cboRFVCatgory.ClientID + "','" + txtReason.ClientID + "','" + lbltype.ClientID + "','" + Drplrdctype.ClientID + "','" + RFVRejectReason.ClientID + "','" + chkReasonType.Text + "','" + txtUser.ClientID + "','" + hdnUserId.ClientID + "','" + lblMailTo.ClientID + "');");
+
+            cboDDCategory.Style.Add("display", "none");
+            txtReason.Style.Add("display", "none");
+            lbltype.Style.Add("display", "none");
+            Drplrdctype.Style.Add("display", "none");
+            txtUser.Style.Add("display", "none");
+            lblMailTo.Style.Add("display", "none");
+        }
+    }
+
+    protected void btnReject_Click(object sender, EventArgs e)
+    {
+        int result = 0;
+        int result1 = 0;
+        lblerror.Text = "";
+        lblerror.CssClass = "";
+        int reasonforPendency = 0;
+        int checkedCount = 0;
+        string interests = string.Empty;
+        bool IsLRPending = false;
+
+        string Remark = "";
+        string LRDC_Type = "";
+        string Mailtoid = "";
+        if (Session["status"].ToString() == "Reject")
+        {
+            bool bApprove = false;
+            for (int i = 0; i < rpReason.Items.Count; i++)
+            {
+                CheckBox chk = (CheckBox)rpReason.Items[i].FindControl("chkreasonofpendency");
+                if (chk.Checked)
+                {
+                    checkedCount += chk.Checked ? 1 : 0;
+                    HiddenField hdnDocId = (HiddenField)rpReason.Items[i].FindControl("hdnDocId");
+                    TextBox txtReason = (TextBox)rpReason.Items[i].FindControl("txtReason");
+                    DropDownList Drplrdctype = (DropDownList)rpReason.Items[i].FindControl("Drplrdctype");
+                    DropDownList CBOddCategory = (DropDownList)rpReason.Items[i].FindControl("ddCategory");
+
+                    HiddenField hdnUserId = (HiddenField)rpReason.Items[i].FindControl("hdnUserId");
+
+                    Remark = txtReason.Text;
+                    reasonforPendency = Convert.ToInt16(hdnDocId.Value);
+
+                    if (chk.Text == "LR/DC")
+                    {
+                        IsLRPending = true;
+                        LRDC_Type = Drplrdctype.SelectedValue;
+                    }
+                    else
+                    {
+                        LRDC_Type = "0";
+                    }
+                    
+                    if (chk.Text == "Others")
+                    {
+                        Mailtoid = hdnUserId.Value;
+                    }
+                    else
+                    {
+                        Mailtoid = "0";
+                    }
+                                        
+                    if (checkedCount != 0)
+                    {
+                        int CategoryId = 0;
+
+                        CategoryId = Convert.ToInt32(CBOddCategory.SelectedValue);
+                        GetModuleId();
+                        result = BillingOperation.ApproveRejectFinalChecking(Convert.ToInt32(ViewState["JobId"]), bApprove, Remark, Convert.ToInt16(reasonforPendency), "", LRDC_Type, CategoryId, LoggedInUser.glUserId, ModuleId);
+
+                        if (result == 0)
+                        {
+                            if (IsLRPending == true)
+                            {
+                                int result_LR = DBOperations.AddAdviceToLRPending(Convert.ToInt32(ViewState["JobId"]), 0, LoggedInUser.glUserId);
+                            }
+                            ModalPopupExtender1.Hide();
+                            lblMsgforApproveReject.Text = "Bill Final Check Rejected! Job Moved Back To Bill Rejected!.";
+                            lblMsgforApproveReject.CssClass = "success";
+                        
+                        }
+                        else if (result == 1)
+                        {
+                            lblMsgforApproveReject.Text = "System Error! Please try after sometime.";
+                            lblMsgforApproveReject.CssClass = "errorMsg";
+                        }
+                        else if (result == 2)
+                        {
+                            lblMsgforApproveReject.Text = "Bill  Final Check Rejected Already Pending!";
+                            lblMsgforApproveReject.CssClass = "errorMsg";
+                            ModalPopupExtender1.Hide();
+                        }
+                    }
+                }
+            }
+
+            if (checkedCount == 0)
+            {
+                ModalPopupExtender1.Show();
+                lblerror.Text = "Please select atleast 1 checkbox";
+                lblerror.CssClass = "errorMsg";
+            }
+
+            if (ModuleId != 2)
+            {
+                int rejectedby = Convert.ToInt16(EnumBilltype.FinalInvoiceCheck);
+                result1 = BillingOperation.Rejectmailnotification(Convert.ToInt32(ViewState["JobId"]), LoggedInUser.glUserId, rejectedby, Convert.ToInt16(Session["FinYearId"]), Convert.ToString(Mailtoid));
+                if (result1 != 0)
+                {
+                    lblMsgforApproveReject.Text = "System Error in Mail Sending! Please try after sometime.";
+                    lblMsgforApproveReject.CssClass = "errorMsg";
+                }
+            }
+            ModuleId = 0;
+        }
+        gvRecievedJobDetail.DataBind();
+    }
+
+    protected void btnReceive_Click(object sender, EventArgs e)
+    {
+        int i = 0;
+
+        RememberOldValues();//Checkbox
+        RePopulateValues();//Checkbox
+        gvNonRecievedJobDetail.AllowPaging = false;//Checkbox
+        gvNonRecievedJobDetail.DataBind();//Checkbox
+
+        foreach (GridViewRow gvr in gvNonRecievedJobDetail.Rows)
+        {
+            if (((CheckBox)gvr.FindControl("Chk1")).Checked)
+            {
+                LinkButton Recv = (LinkButton)gvr.FindControl("lnkJobNo");
+                string JobId = Recv.CommandArgument;
+                string s = string.Empty;
+
+                Session["JobRefNo"] = Recv.Text;
+                GetModuleId();
+
+                int Result = BillingOperation.receivedfile(Convert.ToInt32(JobId), LoggedInUser.glUserId, Convert.ToInt16(EnumBilltype.FinalInvoiceCheck), ModuleId);
+                Session["JobRefNo"] = "";
+                ModuleId = 0;
+
+                if (Result == 0)
+                {
+                    lblreceivemsg.Text = "File Recieved Successfully!";
+                    lblreceivemsg.CssClass = "success";
+                    gvNonRecievedJobDetail.DataBind();
+                    gvRecievedJobDetail.DataBind();
+                }
+                else if (Result == 1)
+                {
+                    lblreceivemsg.Text = "System Error! Please try after sometime!";
+                    lblreceivemsg.CssClass = "errorMsg";
+                }
+                i++;
+            }
+            else
+            {
+                if (i == 0)
+                {
+                    lblreceivemsg.Text = "Please Checked atleast 1 checkbox.";
+                    lblreceivemsg.CssClass = "errorMsg";
+                }
+            }
+
+        }
+        gvNonRecievedJobDetail.AllowPaging = true;//Checkbox
+        gvNonRecievedJobDetail.DataBind();//Checkbox
+
+    }
+
+    #endregion
+
+    #region Data Filter
+
+    protected override void OnLoadComplete(EventArgs e)
+    {
+        if (!Page.IsPostBack)
+        {
+        }
+        else
+        {
+            if (TabJobDetail.ActiveTabIndex == 0)
+            {
+                DataFilter1_OnDataBound();
+            }
+            else
+            {
+                DataFilter2_OnDataBound();
+            }
+        }
+    }
+
+    void DataFilter1_OnDataBound()
+    {
+        try
+        {
+
+            DataFilter1.DataColumns = gvNonRecievedJobDetail.Columns;
+            DataFilter1.FilterSessionID = "PCDFinalCheckingDate.aspx";
+            DataFilter1.FilterDataSource();
+            gvNonRecievedJobDetail.DataBind();
+            if (gvNonRecievedJobDetail.Rows.Count == 0)
+            {
+                lblMsgforNonReceived.Text = "No Job Found For Non Recieved file for Final Check!";
+                lblMsgforNonReceived.CssClass = "errorMsg";
+            }
+            else
+            {
+                lblMsgforNonReceived.Text = "";
+            }
+        }
+        catch (Exception ex)
+        {
+            //DataFilter1.Info = ex.Message; // Handle your exceptions
+        }
+    }
+
+    void DataFilter2_OnDataBound()
+    {
+        try
+        {
+            DataFilter2.FilterSessionID = "PCDFinalCheckingDate1.aspx";
+            DataFilter2.DataColumns = gvNonRecievedJobDetail.Columns;
+            DataFilter2.FilterDataSource();
+            gvRecievedJobDetail.DataBind();
+            if (gvRecievedJobDetail.Rows.Count == 0)
+            {
+                lblMsgforReceived.Text = "No Job Found For Recieved file for Final Check!";
+                lblMsgforReceived.CssClass = "errorMsg";
+            }
+            else
+            {
+                lblMsgforReceived.Text = "";
+            }
+        }
+        catch (Exception ex)
+        {
+            //DataFilter2.Info = ex.Message; // Handle your exceptions
+        }
+    }
+
+    #endregion
+
+    protected void Rptpriorities_ItemDataBound(Object Sender, RepeaterItemEventArgs e)
+    {
+        if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+        {
+            Label lblpriorities = (Label)e.Item.FindControl("lblpriorities");
+            TextBox txtcolor = (TextBox)e.Item.FindControl("txtpriorities");
+
+            if (lblpriorities.Text == "FIFO")
+            {
+                txtcolor.BackColor = System.Drawing.Color.Aqua;
+            }
+            else if (lblpriorities.Text == "Week Day")
+            {
+                txtcolor.BackColor = System.Drawing.Color.Tomato;
+            }
+            else if (lblpriorities.Text == "Day")
+            {
+                txtcolor.BackColor = System.Drawing.Color.SkyBlue;
+            }
+            else if (lblpriorities.Text == "Urgent Bill")
+            {
+                txtcolor.BackColor = System.Drawing.Color.Pink;
+            }
+            else if (lblpriorities.Text == "Quick Paymaster")
+            {
+                txtcolor.BackColor = System.Drawing.Color.Bisque;
+            }
+            else if (lblpriorities.Text == "High Credit Days")
+            {
+                txtcolor.BackColor = System.Drawing.Color.Khaki;
+            }
+            else if (lblpriorities.Text == "Debit Amount")
+            {
+                txtcolor.BackColor = System.Drawing.Color.LightSeaGreen;
+            }
+            else
+            {
+                txtcolor.BackColor = System.Drawing.Color.LightSlateGray;
+            }
+
+        }
+
+
+    }
+    protected void TabJobDetail_ActiveTabChanged(object sender, EventArgs e)
+    {
+        if (TabJobDetail.ActiveTabIndex == 0)
+        {
+            Session["CHECKED_ITEMS"] = null; //Checkbox
+            lblreceivemsg.Text = "";
+            lblMsgforApproveReject.Text = "";
+            DataFilter1.DataSource = PCDSqlDataSource;
+            DataFilter1.DataColumns = gvNonRecievedJobDetail.Columns;
+            DataFilter1.FilterSessionID = "PCDFinalcheckingDate.aspx";
+            DataFilter1.OnDataBound += new DynamicData_Content_DataFilter.BindDataGridView(DataFilter1_OnDataBound);
+            gvNonRecievedJobDetail.DataBind();
+        }
+        if (TabJobDetail.ActiveTabIndex == 1)
+        {
+            Session["CHECKED_ITEMS"] = null; //Checkbox
+            lblreceivemsg.Text = "";
+            lblMsgforApproveReject.Text = "";
+            DataFilter2.DataSource = PCDSqlDataSource1;
+            DataFilter2.DataColumns = gvRecievedJobDetail.Columns;
+            DataFilter2.FilterSessionID = "PCDFinalcheckingDate.aspx";
+            DataFilter2.OnDataBound += new DynamicData_Content_DataFilter.BindDataGridView(DataFilter2_OnDataBound);
+            gvRecievedJobDetail.DataBind();
+        }
+    }
+    public override void VerifyRenderingInServerForm(Control control)
+    {
+        /*Verifies that the control is rendered */
+    }
+    private void RemoveControls(Control grid)
+    {
+        Literal literal = new Literal();
+        for (int i = 0; i < grid.Controls.Count; i++)
+        {
+            if (grid.Controls[i] is LinkButton)
+            {
+                literal.Text = (grid.Controls[i] as LinkButton).Text;
+                grid.Controls.Remove(grid.Controls[i]);
+                grid.Controls.AddAt(i, literal);
+            }
+            if (grid.Controls[i].HasControls())
+            {
+                RemoveControls(grid.Controls[i]);
+            }
+        }
+    }
+    protected void btnAuditJob_Click(object sender, EventArgs e)
+    {
+        int JobId = Convert.ToInt32(hdnJobId.Value);
+        int ModuleId = 1;
+
+        string strAuditRemark = txtAuditRemark.Text.Trim();
+
+        int result = BillingOperation.AddBJVAuditRemark(JobId, ModuleId, strAuditRemark, LoggedInUser.glUserId);
+
+        if (result == 0)
+        {
+            lblError_Audit.Text = "Audit Remark Added Successfully!";
+            lblerror.CssClass = "success";
+            AuditModalPopupExtender.Hide();
+        }
+        else
+        {
+            lblError_Audit.Text = "System Error! Please try after sometime.";
+            lblerror.CssClass = "errorMsg";
+            AuditModalPopupExtender.Show();
+        }
+    }
+    protected void GetModuleId()
+    {
+        DataTable dtModule = BillingOperation.GetModuleId(Session["JobRefNo"].ToString());
+        if (dtModule.Rows.Count > 0)
+        {
+            foreach (DataRow row in dtModule.Rows)
+            {
+                ModuleId = Convert.ToInt32(row["MODULEID"].ToString());
+            }
+        }
+        else
+        {
+            ModuleId = LoggedInUser.glModuleId;
+        }
+    }
+}

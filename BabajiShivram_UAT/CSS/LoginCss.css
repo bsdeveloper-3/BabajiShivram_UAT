@@ -1,0 +1,399 @@
+﻿html, body {
+    height: 100%;
+    width: 100%;
+    font-style: normal;
+    font-size: 9pt;
+    color: #000;
+}
+
+body {
+    font-family: "Open Sans", helvetica, arial;
+}
+
+#page {
+    height: 100%;
+    background: url(../images/top-bg.png) left top repeat-x transparent;
+    position: relative;
+}
+
+form {
+    display: block;
+}
+
+#container {
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+body.hidden {
+    overflow: hidden;
+}
+
+#Image-fade {
+    position: relative;
+    max-width: 2000px;
+    height: 960px;
+    opacity: 0.8;
+    margin-bottom: 60px;
+}
+
+ul.bjqs {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    height: 960px;
+    width: 100%;
+    display: block;
+}
+
+.login {
+    margin-top: 15px;
+    text-align: center;
+}
+
+#login {
+    width: 692px;
+    height: 255px;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    margin: -134px 0 0 -346px;
+    background: rgba(0, 0, 0, 0.42);
+    border-radius: 10px;
+    border: 1px solid #333333e0;
+}
+
+.emailId, .password, .login {
+    clear: both;
+    color: #fff;
+    margin-top: 40px;
+    font-size: 16px;
+    font-weight: 700;
+    padding-left: 10%;
+    width: 90%;
+}
+
+    .emailId label, .password label {
+        width: 94px;
+        float: left;
+        padding-top: 12px;
+    }
+
+    .emailId input, .password input {
+        padding: 7px 0 0;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 6px;
+        background: #333333e0;
+        font-size: 9pt;
+        width: 65%;
+        height: 35px;
+        font-size: 10pt;
+        padding: 2px 2px 1px 10px;
+        font-weight: 600;
+    }
+
+.password {
+    clear: both;
+    color: #fff;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    padding-left: 10%;
+    width: 90%;
+}
+
+#footer {
+    left: 55%;
+    clear: both;
+    position: absolute;
+    height: 141px;
+    bottom: 40px;
+    width: 1200px;
+    margin-left: -472px;
+}
+
+    #footer li {
+        padding-left: 20px;
+        line-height: 30px;
+        list-style: none;
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        padding-right: 10px;
+        background: rgba(0, 0, 0, 0.42);
+        margin-bottom: 5px;
+        border-radius: 10px;
+        border: 1px solid #333333e0;
+    }
+
+    #footer ul {
+        float: left;
+        margin-left: 40px;
+    }
+
+.clear {
+    clear: both;
+}
+
+#copyPower {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    line-height: 30px;
+    font-size: 9pt;
+    color: #101010;
+    background: url(../images/bottom-bg.png) left bottom repeat-x;
+    height: 30px;
+}
+
+.fleft {
+    float: left;
+}
+
+.fright {
+    float: right;
+}
+
+#copyPower .copy {
+    margin-left: 10px;
+}
+
+#copyPower .poweredby {
+    margin-right: 10px;
+}
+
+a {
+    color: #00f;
+}
+
+.finyear {
+    float: right;
+    clear: both;
+    width: 390px;
+    margin-top: 25px;
+    color: #fff;
+}
+
+    .finyear label {
+        padding-top: 7px;
+        width: 94px;
+        float: left;
+    }
+
+table select, select {
+    width: 170px;
+    border-top: 1px solid #abadb3;
+    border-right: 1px solid #dbdfe6;
+    border-bottom: 1px solid #e3e9ef;
+    border-left: 1px solid #e2e3ea;
+    padding: 2px 5px;
+}
+
+.module {
+    float: right;
+    clear: both;
+    width: 390px;
+    margin-top: 25px;
+    color: #fff;
+}
+
+    .module label {
+        padding-top: 12px;
+        width: 94px;
+        float: left;
+    }
+
+.emailId label, .password label {
+    padding-top: 12px;
+    width: 94px;
+    float: left;
+}
+
+.emailId label, .password label {
+    padding-top: 12px;
+    width: 94px;
+    float: left;
+}
+
+.module {
+    clear: both;
+    color: #fff;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    padding-left: 10%;
+    width: 90%;
+}
+
+.module {
+    clear: both;
+    color: #fff;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    padding-left: 10%;
+    width: 90%;
+}
+
+select#ddModule {
+    padding: 7px 0 0;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 6px;
+    background: #333333e0;
+    width: 69%;
+    height: 40px;
+    font-size: 11pt;
+    font-weight: 550;
+    display: block;
+    white-space: pre;
+    min-height: 1.2em;
+    padding: 2px 2px 1px 10px;
+    font-family: sans-serif;
+}
+
+b img {
+    border-radius: 10px;
+}
+
+
+/* Basic jQuery Slider essential styles */
+
+ul.bjqs {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    display: none;
+}
+
+li.bjqs-slide {
+    position: absolute;
+    display: none;
+}
+
+ul.bjqs-controls {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 9999;
+}
+
+    ul.bjqs-controls.v-centered li a {
+        position: absolute;
+    }
+
+    ul.bjqs-controls.v-centered li.bjqs-next a {
+        right: 0;
+    }
+
+    ul.bjqs-controls.v-centered li.bjqs-prev a {
+        left: 0;
+    }
+
+ol.bjqs-markers {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+    ol.bjqs-markers.h-centered {
+        text-align: center;
+    }
+
+    ol.bjqs-markers li {
+        display: inline;
+    }
+
+        ol.bjqs-markers li a {
+            display: inline-block;
+        }
+
+p.bjqs-caption {
+    display: block;
+    width: 96%;
+    margin: 0;
+    padding: 2%;
+    position: absolute;
+    bottom: 0;
+}
+
+/* Demo CSS - You do not need this css in your own slider */
+
+body {
+    font-family: "Open Sans", helvetica, arial;
+}
+
+pre {
+    font-family: "Source Code Pro", monospace;
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 20px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre;
+    white-space: pre-wrap;
+    background-color: whiteSmoke;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    display: none;
+}
+
+h2 {
+    font-size: 48px;
+}
+
+pre + h2 {
+    margin-top: 80px;
+}
+
+#container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+#Image-fade,
+#banner-slide {
+    margin-bottom: 60px;
+}
+
+ul.bjqs-controls.v-centered li a {
+    display: none;
+    padding: 10px;
+    background: #fff;
+    color: blue;
+    text-decoration: none;
+}
+
+    ul.bjqs-controls.v-centered li a:hover {
+        background: #000;
+        color: #fff;
+    }
+
+ol.bjqs-markers li a {
+    padding: 5px 10px;
+    background: #000;
+    color: #fff;
+    margin: 5px;
+    text-decoration: none;
+}
+
+    ol.bjqs-markers li.active-marker a,
+    ol.bjqs-markers li a:hover {
+        background: #999;
+    }
+
+p.bjqs-caption {
+    background: rgba(255,255,255,0.5);
+}

@@ -1,0 +1,54 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+With reference to the above subject, we are pleased to inform that shipment is ready for delivery.
+<BR>
+Please arrange the Vehicle for the below shipment.
+<BR><BR>
+	<table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:10pt" border=1>
+        <tr>
+            <th bgcolor='#FCD5B4'>SN.</th> 
+            <th bgcolor='#FCD5B4'>Job No</th> 
+            <th bgcolor='#FCD5B4'>Consignee</th> 
+            <th bgcolor='#FCD5B4'>Port</th> 
+            <th bgcolor='#FCD5B4'>Customer Ref.</th> 
+            <th bgcolor='#FCD5B4'>Product Description</th>
+            <th bgcolor='#FCD5B4'>No of Pkgs</th> 
+            <th bgcolor='#FCD5B4'>Gross Weight</th> 
+            <th bgcolor='#FCD5B4'>Delivery Type</th> 
+            <th bgcolor='#FCD5B4'>Sum Of 20</th> 
+            <th bgcolor='#FCD5B4'>Sum Of 40</th>
+            <th bgcolor='#FCD5B4'>CFS Name/Pick Point</th> 
+            <th bgcolor='#FCD5B4'>Delivery Location</th>
+        </tr>
+        <tr>
+            <td>1</td> 
+            <td><@JobNo></td> 
+            <td><@Consignee></td> 
+            <td><@Port></td> 
+            <td><@CustomerRef></td> 
+            <td><@ShortDescription></td>
+            <td><@Packages></td> 
+            <td><@GrossWeight></td> 
+            <td><@DeliveryType></td> 
+            <td><@Sum20></td> 
+            <td><@Sum40></td> 
+            <td><@CFSName></td>
+            <td><@DeliveryLocation></td> 
+         </tr>
+    </table>
+<BR><BR>
+Thank you for the continuous support.
+<BR><BR>
+Regards,
+<BR><BR>
+<@EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+
+</body>
+</html>

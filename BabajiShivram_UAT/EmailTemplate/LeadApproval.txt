@@ -1,0 +1,128 @@
+﻿<html>
+<style>
+    p {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
+    .tdClass {
+        padding-bottom: 0px;
+    }
+
+    .trDetail {
+        font-family: Calibri;
+        font-size: 12pt;
+        width: 100%;
+        border-radius: 4px;
+        border: 2px solid darkgray;
+        padding: 10px;
+        background-color: lightgray;
+    }
+
+    font {
+        color: black;
+    }
+
+    .topTr {
+        border: 2px solid darkgray;
+        border-bottom: none;
+        bEditID: r3st1;
+        color: white;
+        bLabel: main;
+        font-size: 12pt;
+        font-family: calibri;
+        height: 50px;
+        background-color: #268CD8;
+    }
+
+    .first_p {
+        text-align: center;
+        font-weight: 600;
+        font-size: 17pt;
+        padding: 15px 15px 15px 15px;
+    }
+</style>
+<body class="setupTab" style="background-color:white; bEditID:b1st1; bLabel:body;">
+    <center>
+        <table cellpadding="0" width="450" cellspacing="0" id="topTable" height="850">
+            <tr>
+                <td styleInsert="1" height="400" class="topTr" style="">
+                    <p style="text-align: center; font-weight: 600;font-size: 17pt; padding: 15px;">
+                        <font style="color:white; padding-top: 20px">
+                            Lead Approval
+                        </font>
+                    </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td styleInsert="1" height="300" style="border:2px solid darkgray; border-radius: 6px; bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:calibri;">
+                    <table border="0" cellpadding="5" width="550" cellspacing="5" height="400">
+                        <tr>
+                            <td tEditID="c1r1" style="bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:calibri;" aEditID="c1r1" locked="0">
+                                <div class="subtle-wrap" style="box-sizing: border-box; padding: 5px 10px 20px; margin-top: 15px;">
+                                    <div class="content-body article-body" style="box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;">
+                                        <p style="color: rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;">
+                                            <span style="box-sizing: border-box;">
+                                                <font color="#666666" face="Avenir, calibri, sans-serif">
+                                                    Dear Sir,&nbsp;
+                                                </font>
+                                            </span>
+                                        </p>
+                                        <p style="color: rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;">
+                                            <span style="box-sizing: border-box;">
+                                                <font color="#666666" face="Avenir, calibri, sans-serif"></font>
+                                            </span>
+                                        </p>
+                                        <p style="box-sizing: border-box;">
+                                            <font color="#666666" face="Avenir, calibri, sans-serif">
+                                                <BR>
+												Please <a href=@a style="color:blue; font-family: Calibri;font-size: 11.5pt">click here</a> for approval of following lead.
+                                                <BR><BR>
+
+                                                <table class="trDetail" style="font-family: Calibri; font-size: 12pt; border-radius: 4px; background-color: lightgray">
+                                                    <tr>
+                                                        <td class="tdClass"><b>Company : </b> @Company</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tdClass"><b>Contact : </b> @Contact</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tdClass"><b>Email :</b> @Email</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tdClass"><b>Phone No :</b> @PhoneNo</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tdClass"><b>Created By :</b> @CreatedBy</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="tdClass" style="padding-bottom:10px"><b>Created Date :</b> @CreatedDate</td>
+                                                    </tr>
+                                                </table>
+                                                <br />
+                                                <BR>
+                                                Regards,
+                                                <BR>
+                                                @UserName
+                                            </font>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td styleInsert="1" height="150" class="topTr" style="">
+                    <p style="text-align: center; font-weight: 600;font-size: 12pt; padding: 15px;">
+                        <font style="color:white; padding-top: 10px">
+                            This is system generated mail, please do not reply to this message via e-mail.
+                        </font>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

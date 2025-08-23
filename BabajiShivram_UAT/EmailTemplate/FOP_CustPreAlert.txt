@@ -1,0 +1,106 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+    Dear Sir / Madam,
+    <BR /><BR />
+    With reference to the above subject, Please confirm the Customer Pre-Alert details for the Given Enquiry.
+  
+    <BR /><BR />
+     <table style="border:1px solid black; font-family:Arial; font-style:normal; font-size:9pt" width="90%">
+	<tr style="background-color:#99CCFF;">
+            <td>Freight Job No</td>
+            <td>@FRJobNo</td>
+        </tr>
+        <tr style="background-color:#FCD5B4;">
+            <td>Enq Ref No</td>
+            <td>@ENQRefNo</td>
+        </tr>
+ 	<tr style="background-color:#99CCFF;">
+            <td>Customer</td>
+            <td>@Customer</td>
+        </tr>
+        <tr style="background-color:#FCD5B4;">
+            <td>Shipper</td>
+            <td>@Shipper</td>
+        </tr>
+        <tr style="background-color:#99CCFF;">
+            <td>Consignee</td>
+            <td>@Consignee</td>
+        </tr>
+       
+        <tr style="background-color:#FCD5B4;">
+            <td>Port of Loading</td>
+            <td>@LoadingPortName</td>
+        </tr>
+        <tr style="background-color:#99CCFF;">
+            <td>Port of Discharge</td>
+            <td>@PortOfDischargedName</td>
+        </tr>
+		<tr style="background-color:#99CCFF;">
+            <td>Vessel Name</td>
+            <td>@VesselName</td>
+        </tr>
+		<tr style="background-color:#99CCFF;">
+            <td>Container No</td>
+            <td>@ContainerNo</td>
+        </tr>
+		<tr style="background-color:#FCD5B4;">
+            <td>Packages</td>
+            <td>@NoOfPackages</td>
+        </tr>
+        <tr style="background-color:#99CCFF;">
+            <td>Weight (kg)</td>
+            <td>@GrossWeight</td>
+        </tr>
+        <tr style="background-color:#FCD5B4;">
+            <td>Supplier Invoice No.</td>
+            <td>@InvoiceNo</td>
+        </tr>
+        <tr style="background-color:#99CCFF;">
+            <td>PO NO.</td>
+            <td>@PONumber</td>
+        </tr>
+        <tr style="background-color:#FCD5B4;">
+            <td>Export Type</td>
+            <td>@ExportType</td>
+        </tr>
+        <tr style="background-color:#99CCFF;">
+            <td>Carting Point</td>
+            <td>@CartingPoint</td>
+        </tr>
+        <tr style="background-color:#FCD5B4;">
+            <td>SB No.</td>
+            <td>@SBNo</td>
+        </tr>
+		 <tr style="background-color:#99CCFF;">
+            <td>SB Date</td>
+            <td>@SBDate</td>
+        </tr>
+		<tr style="background-color:#FCD5B4;">
+            <td>Shipping line Booking No</td>
+            <td>@ShipLineBookingNo</td>
+        </tr>
+		
+        </tr>
+		<tr style="background-color:#FCD5B4;">
+            <td>Place Of Delivery</td>
+            <td>@PlaceOfDelivery</td>
+        </tr>
+		<tr style="background-color:#99CCFF;">
+            <td>CHA Job No</td>
+            <td>@CHAJobNo</td>
+        </tr>
+</table>
+    <BR />
+    Thank you for the continuous support.
+    <BR />
+    Regards,
+    <BR />
+    @EmpName
+    <BR />
+    Babaji Shivram Clearing & Carriers Pvt Ltd
+    <BR /><BR />
+    <B>This is system generated mail, please do not reply to this message via e-mail.</B>
+    <BR />
+
+</body>
+</html>

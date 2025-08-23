@@ -1,0 +1,13 @@
+﻿        
+        [TodayDate]
+        <BR>
+        FROM: &nbsp;[FROMName] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Dow Chemical International Pvt Ltd<B>
+        <BR>To, <BR>City Bank<BR>
+        
+             <B>Enclosed please find here with the Original Triplicate copy of Bill of Entry (Exchange control copy), Invoice, bill of lading,</B>  
+             <BR>For further necessary action at your end.  The details are as under:<br />
+             Document submission for IPMS processing:<BR><BR><BR>
+        
+       
+                
+       

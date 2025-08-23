@@ -1,0 +1,22 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+With reference to the above subject, we have received the document for custom clearance,<BR> 
+but we regret to inform you that, below listed document are missing for custom clearance<BR> from your end:
+<BR><BR>
+<DocumentList>
+<BR><BR>
+Please arrange to forward the same as soon as possible for further custom clearance <BR>processing.
+<BR><BR>
+Thank you for the continuous support.
+<BR><BR>
+Regards,
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+</body>
+</html>

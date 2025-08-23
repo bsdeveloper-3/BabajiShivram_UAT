@@ -1,0 +1,16 @@
+﻿        <br /><br />
+
+            [TodayDate]
+        
+            <br />  To, 
+            <br />  M/S. INTL FLAVORS & FRAGRANCES IND P LTD
+            <br />  1-5, Seven Wells Street,
+            <br />  St.Thomas  Mount,
+            <br />	Chennai - 600 016.
+            <br />
+        
+            <br />KIND ATTN: Mr. Mahesh
+			<br />SUB: Submission of PCD
+            <br />  Please find enclosed herewith the following original import document for below Jobs:
+            <br />
+        

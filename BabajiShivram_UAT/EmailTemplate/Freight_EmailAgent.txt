@@ -1,0 +1,54 @@
+<html><style>p{margin-top:0px; margin-bottom:0px;}</style>
+<body class="setupTab"  style=" background-color:#CCCCCC; bEditID:b1st1; bLabel:body;">
+<center ><table cellpadding="0" width="500" cellspacing="0" id="topTable" height="450" ><tr valign="top" ><td  style=" background-color:#FFFFFF; bEditID:r1st1; bLabel:header; vertical-align:top; height:50; text-align:left;"><img border="0" bEditID="r1sp1" bLabel="headerImage" id="r1sp1" src="http://live.babajishivram.com/Images/Babji-Logo.png" ></img></td></tr><tr valign="top" ><td  style=" background-color:#000000; bEditID:r2st1; bLabel:accent1; height:1;"></td></tr><tr valign="top" ><td styleInsert="1" height="300"  style=" background-color:#FFFFFF; bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:arial;">
+
+<table border="0" cellpadding="5" width="550" cellspacing="5" height="400" ><tr valign="top" height="400" ><td tEditID="c1r1" style=" background-color:#FFFFFF; bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:arial;" aEditID="c1r1" locked="0" ><div class="subtle-wrap" style="background: white; box-sizing: border-box; padding: 20px 30px 30px; margin-top: 15px;"><div class="content-body article-body" style="box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;"><p style="color: rgb(0, 0, 0); font-family: arial; font-size: 12pt; box-sizing: border-box;"><span style="box-sizing: border-box;"><font color="#666666" face="Avenir, Arial, sans-serif"><b>Dear @AgentName,&nbsp;</b></font></span></p><p style="color: rgb(0, 0, 0); font-family: arial; font-size: 12pt; box-sizing: border-box;"><span style="box-sizing: border-box;"><font color="#666666" face="Avenir, Arial, sans-serif"><br></font></span></p><p style="box-sizing: border-box;"><font color="#666666" face="Avenir, Arial, sans-serif">
+With reference to the above subject, freight enquiry number @EnqRefNo shared with you.
+<BR><BR>
+Freight Details:
+<BR><BR>
+<table>
+    <tr>
+        <td>ENQ REF No:</td><td>@EnqRefNo</td> 
+    </tr>
+	<tr>
+        <td>FREIGHT TYPE:</td><td>@FreightType</td> 
+    </tr>
+	<tr>
+		<td>FREIGHT MODE:</td><td>@FreightMode</td> 
+    </tr>
+	<tr>
+		<td>CUSTOMER REF NO:</td><td>@CustRefNo</td> 
+    </tr>
+	<tr>
+		<td>PORT OF LOADING:</td><td>@PortOfLoading</td> 
+    </tr>
+	<tr>
+		<td>PORT OF DISCHARGE:</td><td>@PortOfDischarge</td> 
+	</tr>
+	<tr>
+		<td>TERMS:</td><td>@Terms</td>
+    </tr>
+	<tr>
+		<td>PACKAGES:</td> <td>@NoOfPackages</td>
+    </tr>
+	<tr>
+		<td>WEIGHT (kg):</td><td>@GrossWeight</td> 
+	</tr>
+	<tr>
+		<td>SHIPMENT INFORMATION:</td> <td>@Remark</td> 
+	</tr>
+</table>
+<BR>
+Regards,
+
+<p style="box-sizing: border-box;"><font color="#666666" face="Avenir, Arial, sans-serif"><br></font></p><p style="box-sizing: border-box;"><font color="#666666" face="Avenir, Arial, sans-serif">
+@EmpName
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<br></font></p></div></div></td></tr></table></td></tr><tr valign="top" ><td  style=" background-color:#AAAAFF; bEditID:r4st1; bLabel:accent2; height:0;"></td></tr><tr valign="top" ><td  style=" background-color:#FFFFFF; bEditID:r5st1; bLabel:footer; vertical-align:top; height:100; text-align:left;"></td></tr><tr valign="top" ><td  style=" background-color:#000000; bEditID:r6st1; bLabel:accent3; height:1;"></td></tr></table></center><br><br>
+<center >
+</body>
+</HTML>

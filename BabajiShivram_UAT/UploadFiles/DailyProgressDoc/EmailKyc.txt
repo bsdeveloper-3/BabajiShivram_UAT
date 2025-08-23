@@ -1,0 +1,70 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR>documents for KYC Form Approval <BR><BR>
+KYC Details as below:<BR><BR>
+<table style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;border-style: solid;'>
+Customer Name : <PersonName><BR>
+Contact Person Name:<NameofVendor><BR>
+ Constitution  :<Constitution><BR>
+<table>
+<h4>Net Profit - Last three financial years</h4>
+<tr> 
+<td> 
+<FinYearId>
+</td>
+<td>
+<Amount>
+ </td>
+</tr>
+<tr>
+<td>
+<FinYearId>
+ </td>
+<td> 
+<Amount>
+</td>
+</tr>
+
+
+<tr>
+<td>
+<FinYearId>
+</td>
+<td>
+<Amount>
+</td>
+
+</tr>
+
+</table>
+<BR>
+HOD:<HODName><BR>
+
+Payment Term:<PaymentsTerms>
+<BR><BR>
+<table>
+<tr><td>
+<button type="button" >Approv</button>
+</td><td> <button type="button">Reject</button></td>
+</tr>
+</table>
+</table><BR><BR><BR>
+
+
+And below are the documents has been dispatched:<BR><BR>
+<DocumentList>
+<BR>
+<BR>
+Thank you for the continuous support.
+<BR><BR>
+Regards,<BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+
+</body>
+</html>

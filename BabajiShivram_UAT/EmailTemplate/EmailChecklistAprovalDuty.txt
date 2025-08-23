@@ -1,0 +1,21 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR>
+With reference to the above subject, we are pleased to inform that we have received the documents for custom clearance, further enclosed herewith checklist for your approval & Custom Duty Request.
+<BR>
+Please check & approve the attached checklist for further processing of documentation. 
+<BR>
+Also we request you to arrange for Custom duty amount "<DutyAmount>" in favour of "<DutyAccountName>" for further custom clearance.
+<BR><BR>
+Thank you for the continuous support.
+<BR><BR>
+Regards,
+<BR><BR>
+<EmpName>
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR>
+
+</body>
+</html>

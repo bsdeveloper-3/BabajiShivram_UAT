@@ -1,0 +1,45 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+ Please chack GST Details Submited On Live Traking .
+<BR><BR>
+
+<table style="border:1px solid black; font-family:Arial; font-style:normal; font-size:9pt" width="40%" >
+
+<tr><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'>
+Company Name</td><td style='font-style:normal;color:#000;border:1px solid  black'><CompanyName></td></tr>
+
+<tr><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'>
+Type</td><td style='font-style:normal;color:#000;border:1px solid  black'><IsCompany></td></tr>
+
+<tr><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'>
+GST Registered
+</td><td style='font-style:normal;color:#000;border:1px solid  black'><IsGSTRegister></td></tr>
+<tr><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'>
+Company PAN Number:</td><td style='font-style:normal;color:#000;border:1px solid  black'><ComapnyPanNo></td></tr>
+
+<tr><td style='font-style:normal;color:#000;border:1px solid  black'>Authorized Employee GST </td><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'><EmployeeForGst></td></tr>
+
+<tr><td style='font-style:normal;color:#000;border:1px solid  black'>E- mail Address </td><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'><EmailAddress></td></tr>
+
+<tr><td style='font-style:normal;color:#000;border:1px solid  black'>Contact No</td><td style='font-style:normal;color:#000;width:40%;border:1px solid  black'><ContactNo></td></tr>
+
+
+
+
+
+</table>
+<BR><BR>
+
+Thank you .
+<BR><BR>
+Regards,
+
+<BR>
+Babaji Shivram Clearing & Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+</body>
+</html>

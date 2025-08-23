@@ -1,0 +1,34 @@
+<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+    Dear Team,
+    <BR /><BR />
+    Kindly provide us <B>D/O Charges </B> for below Shipment. 
+ 
+    <BR /><BR />
+	@AdditionalInfo
+    <BR /><BR />
+    CONSIGNEE: @CONSIGNEE
+    <BR /><BR />
+    MBL No. : @MBLNO
+	<BR /><BR />
+    MBL Date : @MBLDate		
+	<BR /><BR />
+    CC : ?  
+    <BR /><BR />
+    Kindly share GST details.
+
+    <BR /> <BR /> <BR />
+    Thanks & Regards,
+    <BR />
+    @EmpName
+    <BR />
+    Babaji Shivram Clearing & Carriers Pvt. Ltd.<BR />
+    Plot # 2, Saki-Vihar Rd, Behind Excom house, Sakhinaka, Andheri (E), Mumbai – 72.<BR />
+    Tel No. 66485640 | Fax No. 66485656 |
+
+    <BR /><BR />
+    <B><I>Note* : This is system generated mail, Please do not reply to this message via e-mail.</I></B>
+    <BR />
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="FAQMaster.master.cs" Inherits="FAQ_FAQMaster" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+   <meta http-equiv="Content-Type" content="~/FAQ/text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="~/FAQ/layout/styles/layout.css" type="text/css" />
+    <asp:ContentPlaceHolder id="head" runat="server">
+
+    </asp:ContentPlaceHolder>
+</head>
+<body id="top">
+     <div class="wrapper col1">
+        <div id="header">
+            <div id="logo">
+                 <a href="https://www.babajishivram.com/" class="custom-logo-link" rel="home" itemprop="url">
+                     <img width="150" height="90" style="border-radius: 6px" title="Babaji Shivram" src="https://www.babajishivram.com/wp-content/uploads/2017/05/logonew.png" class="custom-logo" alt="logonew" itemprop="logo"> 
+                     </a>
+            </div>
+            <br />
+             <br />
+            
+         <div id="newsletter" >
+                
+                <asp:Label ID="lblHeaderText" Text="Frequently Asked Questions" Font-Size="X-Large" runat="server" Style="padding-left:150px"/>
+                
+            </div>
+            <br class="clear" />
+        </div>
+    </div>
+    <form id="form1" runat="server">
+
+    <div>
+ <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+
+</asp:ContentPlaceHolder>
+    </div>
+    </form>
+      <div class="wrapper col6" style="background-color:white">
+            <div id="footer">
+                   
+                
+                <div class="footbox">
+                    
+                </div>
+                <br class="clear" />
+            </div>
+        </div>
+   <div class="wrapper col7">
+  <div id="copyright">
+    <p class="fl_left">Copyright &copy; 2017 - All Rights Reserved - <a href="http://live.babajishivram.com/Login.aspx">Babaji Shivram</a></p>
+    <p class="fl_right"> <a target="_blank" href="#" title="Babaji Shivram"></a></p> <p  class="fl_left">  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+       <p class="fl_left">   Mail Us:<a href="mailto:customercare@babajishivram.com">  customercare@babajishivram.com  </a></p> 
+           <p  class="fl_left"></p>  <p class="fl_left">   /   <a href="mailto:info@babajishivram.com">  info@babajishivram.com  </a></p> 
+                     
+    <br class="clear" />
+  </div>
+
+</div>
+  </body>
+  </html>

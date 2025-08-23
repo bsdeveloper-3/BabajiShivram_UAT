@@ -1,0 +1,74 @@
+﻿<html>
+<style>
+    p {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
+    .tdClass {
+        padding-left: 60px;
+        padding-right: 50px;
+    }
+</style>
+<body>
+
+    <BR>
+    With reference to the above subject, please find your shipment Transport Status.
+    <BR><BR>
+    Transport Detail:
+    <hr />
+
+    <table style="font-family: Calibri; font-size: 12pt">
+        <tr>
+            <td>Job No</td>
+            <td class="tdClass">@JobRefNo</td>
+        </tr>
+        <tr>
+            <td>Ref No</td>
+            <td class="tdClass">@CustRefNo</td>
+        </tr>
+        <tr>
+            <td>Dispatch Date</td>
+            <td class="tdClass">@DispatchDate</td>
+        </tr>
+        <tr>
+            <td>Vehicle No</td>
+            <td class="tdClass">@VehicleNo</td>
+        </tr>
+        <tr>
+            <td>Vehicle Type</td>
+            <td class="tdClass">@VehicleType</td>
+        </tr>
+    </table>
+    <hr />
+
+    <table style="font-family: Calibri; font-size: 12pt">
+        <tr>
+            <td>Current Status</td>
+            <td class="tdClass">@DailyStatus</td>
+        </tr>
+    </table>
+    <hr />
+
+    <table style="font-family: Calibri; font-size: 12pt">
+        <tr>
+            <td>Delivery From</td>
+            <td class="tdClass">@DeliveryFrom</td>
+        </tr>
+        <tr>
+            <td>Delivery Point</td>
+            <td class="tdClass">@DeliveryTo</td>
+        </tr>
+    </table>
+    <hr />
+
+    <BR>
+    Regards,
+    <BR>
+    @EmpName
+    <BR>
+    Babaji Shivram Clearing & Carriers Pvt Ltd
+    <BR><BR>
+    <B>This is system generated mail, please do not reply to this message via e-mail.</B>
+</body>
+</html>

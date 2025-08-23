@@ -1,0 +1,57 @@
+﻿<html>
+<body style='height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;'>
+Dear Sir / Madam,
+<BR><BR>
+Below Vendor Payment Request @StatusName For Following Reason
+<BR>
+<BR><BR>
+	<table style="border-collapse:collapse; border:1px solid #d5d5d5; font-family:Arial; font-style:normal; font-size:10pt" border=1>
+        <tr>
+       		<td>Job No</td>
+		<td>@JobRefNo</td> 
+	</tr>
+	<tr>
+       		<td>Customer</td>
+		<td>@Customer</td> 
+	</tr>
+	<tr>
+       		<td>Consignee</td>
+		<td>@Consignee</td> 
+	</tr>
+	<tr>
+       		<td>Expense Type</td>
+		<td>@ExpenseType</td> 
+	</tr>
+	<tr>
+       		<td>Vendor Name</td>
+		<td>@VendorName</td> 
+	</tr>
+	<tr>
+       		<td>Invoice No</td>
+		<td>@InvoiceNo</td> 
+	</tr>
+	<tr>
+		<td>Total Invoice Amount</td>
+		<td>@TotalInvoiceAmount</td>	
+	</tr>
+	<tr>
+		<td>Remarks</td>
+		<td>@Remarks</td>
+	</tr>
+	<tr>
+		<td>User Name</td>
+		<td>@UserName</td>
+	</tr>
+    </table>
+<BR><BR>
+Regards,
+<BR><BR>
+Account Department
+<BR>
+Babaji Shivram Clearing And Carriers Pvt Ltd
+<BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+<BR>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+
+  <xsd:element name="Invoice">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="InvoiceNumber" type="InvoiceNumberType"/>
+        <xsd:element name="BillingAddress" type="AddressType"/>
+        <xsd:element name="ShippingAddress" type="AddressType"/>
+        <xsd:element name="BilledItems" type="ItemsType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="InvoiceNumberType">
+    <xsd:restriction base="xsd:positiveInteger">
+      <xsd:minExclusive value="3000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="AddressType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string"/>
+      <xsd:element name="FAO" type="xsd:string"/>
+      <xsd:element name="Street1" type="xsd:string"/>
+      <xsd:element name="Street2" type="xsd:string"/>
+      <xsd:element name="City" type="xsd:string"/>
+      <xsd:element name="ZipCode" type="USZipCodeType"/>
+      <xsd:element name="State" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="USZipCodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{5}|\d{5}-\d{4}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="ItemsType">
+    <xsd:sequence>
+      <xsd:element name="Item" type="ItemType" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ItemType">
+    <xsd:sequence>
+      <xsd:element name="ItemDescription" type="xsd:string"/>
+      <xsd:element name="ItemCode" type="ItemCodeType"/>
+      <xsd:element name="ItemQuantity" type="ItemQuantityType"/>
+      <xsd:element name="ItemPrice" type="ItemPriceType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ItemCodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="K9-[0-9]{4}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemQuantityType">
+    <xsd:restriction base="xsd:nonNegativeInteger">
+      <xsd:minExclusive value="0" />
+      <xsd:maxExclusive value="1000" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemPriceType">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minExclusive value="0.99" />
+      <xsd:maxExclusive value="500.00" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

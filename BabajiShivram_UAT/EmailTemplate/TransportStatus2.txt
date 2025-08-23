@@ -1,0 +1,30 @@
+﻿<html>
+<body style="padding:5px ;margin-left: 10px;height:100%; width:100%; font-family:Arial; font-style:normal; font-size:9pt; color:#000;">
+<BR><BR>
+	Dear Sir / Madam,
+<BR><BR>
+		Please find your current shipment dispatch vehicle status 
+<BR><BR><BR>
+		<b>Job No</b> : <u>@JobRefNo</u>
+<BR><BR>
+		<b>Customer</b> : <u>@Customer</u>
+<BR><BR>
+		<b>Cust Ref No</b> : <u>@CustRefNo</u>
+<BR><BR>
+		<b>Vehicle No</b> : <u>@VehicleNo</u>
+<BR><BR>
+		<b>Dispatch Date</b> : <u>@DispatchDate</u>
+<BR><BR>
+		<b>Vehicle Type</b> : <u>@VehicleType</u>
+<BR><BR>
+		<b>Delivery From</b> : <u>@DeliveryFrom</u>
+<BR><BR>
+		<b>Delivery Point</b> : <u>@DeliveryTo</u> 	
+<BR><BR>
+		<b>Current Status</b> : <u>@DailyStatus</u>
+<BR><BR><BR>
+<BR>Thanks & Regards,<BR>
+<BR>@EmpName<BR><BR><BR>
+<B>This is system generated mail, please do not reply to this message via e-mail.</B>
+</body>
+<html>

@@ -1,0 +1,2119 @@
+﻿using System;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.IO;
+using System.Text;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.html.simpleparser;
+using AjaxControlToolkit;
+using Ionic.Zip;
+using System.Security.Cryptography;
+public partial class CRM_EditLead : System.Web.UI.Page
+{
+    LoginClass LoggedInUser = new LoginClass();
+    private static Random _random = new Random();
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        ScriptManager1.RegisterPostBackControl(FormViewLead);
+        ScriptManager1.RegisterPostBackControl(btnAddContact);
+        ScriptManager1.RegisterPostBackControl(gvVisitReport);
+        ScriptManager1.RegisterPostBackControl(gvService);
+        ScriptManager1.RegisterPostBackControl(gvDocuments);
+        ScriptManager1.RegisterPostBackControl(btnEditQuote);
+        ScriptManager1.RegisterPostBackControl(btnDownloadQuote);
+        ScriptManager1.RegisterPostBackControl(btnAddContractCopy);
+        ScriptManager1.RegisterPostBackControl(btnAddService);
+        ScriptManager1.RegisterPostBackControl(btnAddActivity);
+        ScriptManager1.RegisterPostBackControl(imgbtnDownloadContract);
+        ScriptManager1.RegisterPostBackControl(gvEnquiry);
+        ScriptManager1.RegisterPostBackControl(gvKYCCopys);
+        ScriptManager1.RegisterPostBackControl(btnSaveDocument2);
+        ScriptManager1.RegisterPostBackControl(lnkStampCopyEmail);
+
+        if (!IsPostBack)
+        {
+            if (Session["LeadId"] == null)
+            {
+                Response.Redirect("Leads.aspx");
+            }
+            else
+            {
+                gvStatusHistory.DataBind();
+                GetLeadDetail(Convert.ToInt32(Session["LeadId"]));
+                SetInitialRow_Agenda();
+
+                DataTable dtAttendee = new DataTable();
+                dtAttendee.Columns.AddRange(new DataColumn[4] { new DataColumn("PkId"), new DataColumn("UserId"), new DataColumn("UserName"), new DataColumn("EmailId") });
+                ViewState["Attendee"] = dtAttendee;
+
+                CheckService(); //added by sayali  08-11-2019
+                CheckKYCDone();
+            }
+            
+        }
+
+        if(LoggedInUser.glUserId==1)
+        {
+            lnkStampCopyEmail.Visible = true;
+            lnkKYCEmail.Visible = true;
+        }
+        else
+        {
+            lnkStampCopyEmail.Visible = false;
+            lnkKYCEmail.Visible = false;
+        }
+    }
+
+    #region Lead Detail Update
+
+    protected void GetLeadDetail(int LeadId)
+
+    {
+        int LeadSourceId = 0, CompanyTypeId = 0, SectorId = 0, CatgId = 0, RoleId = 0;
+        bool IsRFQReceived = false;
+
+        hdnQuotationId.Value = "0";
+        hdnContractCopyPath.Value = "";
+        lblContractCopy_Title.Text = "Upload Contract Copy";
+        imgbtnDownloadContract.Visible = false;
+
+        DataSet dsGetLeadDetail = DBOperations.CRM_GetLeadById(LeadId);
+        if (dsGetLeadDetail.Tables[0].Rows.Count > 0)
+        {
+            //FormViewLead.DataSource = dsGetLeadDetail.Tables[0];
+            FormViewLead.DataBind();
+
+            if (dsGetLeadDetail.Tables[0].Rows[0]["CompanyID"] != DBNull.Value)
+            {
+                hdnCompanyId.Value = dsGetLeadDetail.Tables[0].Rows[0]["CompanyID"].ToString();
+            }
+            if (dsGetLeadDetail.Tables[0].Rows[0]["LeadSourceID"] != DBNull.Value)
+            {
+                LeadSourceId = Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["LeadSourceID"]);
+            }
+            if (dsGetLeadDetail.Tables[0].Rows[0]["CompanyTypeID"] != DBNull.Value)
+            {
+                CompanyTypeId = Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["CompanyTypeID"]);
+            }
+            if (dsGetLeadDetail.Tables[0].Rows[0]["SectorID"] != DBNull.Value)
+            {
+                SectorId = Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["SectorID"]);
+            }
+            if (dsGetLeadDetail.Tables[0].Rows[0]["BusinessCategoryID"] != DBNull.Value)
+            {
+                CatgId = Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["BusinessCategoryID"]);
+            }
+            if (dsGetLeadDetail.Tables[0].Rows[0]["RoleId"] != DBNull.Value)
+            {
+                RoleId = Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["RoleId"]);
+            }
+            if (dsGetLeadDetail.Tables[0].Rows[0]["LeadStageId"] != DBNull.Value)
+            {
+                if (Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["LeadStageId"]) == 4) // RFQ Received
+                {
+                    IsRFQReceived = true;
+                }
+                else if (Convert.ToInt32(dsGetLeadDetail.Tables[0].Rows[0]["LeadStageId"]) == 10) // Rejected
+                {
+                    btnEditQuote.Visible = false;
+                    btnDownloadQuote.Visible = false;
+                    btnAddContact.Visible = true;
+                    btnAddContractCopy.Visible = false;
+                    btnAddVisitReport.Visible = true;
+                }
+            }
+
+            if (FormViewLead.CurrentMode == FormViewMode.Edit)
+            {
+                DropDownList ddlSource = (DropDownList)FormViewLead.FindControl("ddlSource");
+                DropDownList ddlCompanyType = (DropDownList)FormViewLead.FindControl("ddlCompanyType");
+                DropDownList ddlBusinessSector = (DropDownList)FormViewLead.FindControl("ddlBusinessSector");
+                DropDownList ddlBusinessCatg = (DropDownList)FormViewLead.FindControl("ddlBusinessCatg");
+                DropDownList ddlRole = (DropDownList)FormViewLead.FindControl("ddlRole");
+                CheckBox chkRFQReceived = (CheckBox)FormViewLead.FindControl("chkRFQReceived");
+
+                if (ddlSource != null)
+                {
+                    ddlSource.Items.Clear();
+                    ddlSource.DataBind();
+                    ddlSource.SelectedValue = LeadSourceId.ToString();
+                }
+
+                if (ddlCompanyType != null)
+                {
+                    ddlCompanyType.Items.Clear();
+                    ddlCompanyType.DataBind();
+                    ddlCompanyType.SelectedValue = CompanyTypeId.ToString();
+                }
+
+                if (ddlBusinessSector != null)
+                {
+                    ddlBusinessSector.Items.Clear();
+                    ddlBusinessSector.DataBind();
+                    ddlBusinessSector.SelectedValue = SectorId.ToString();
+                }
+
+                if (ddlBusinessCatg != null)
+                {
+                    ddlBusinessCatg.Items.Clear();
+                    ddlBusinessCatg.DataBind();
+                    ddlBusinessCatg.SelectedValue = CatgId.ToString();
+                }
+
+                if (ddlRole != null)
+                {
+                    ddlRole.Items.Clear();
+                    ddlRole.DataBind();
+                    ddlRole.SelectedValue = RoleId.ToString();
+                }
+
+                if (dsGetLeadDetail.Tables[0].Rows[0]["LeadStageName"] != DBNull.Value)
+                {
+                    if (dsGetLeadDetail.Tables[0].Rows[0]["LeadStageName"].ToString().ToLower() == "quote")
+                    {
+                        chkRFQReceived.Enabled = true;
+                    }
+                    else
+                    {
+                        chkRFQReceived.Enabled = false;
+                    }
+                }
+            }
+
+            DataSet dsGetQuote = DBOperations.CRM_GetQuoteByLead(LeadId);
+            if (dsGetQuote != null && dsGetQuote.Tables.Count > 0)
+            {
+                if (dsGetQuote.Tables[0].Rows.Count > 0)
+                {
+                    hdnQuotationId.Value = dsGetQuote.Tables[0].Rows[0]["QuotationId"].ToString();
+                    hdnQuotePath.Value = dsGetQuote.Tables[0].Rows[0]["QuotePath"].ToString();
+                    if (dsGetQuote.Tables[0].Rows[0]["ContractStartDt"] != DBNull.Value)
+                    {
+                        txtContractStartDt.Text = Convert.ToDateTime(dsGetQuote.Tables[0].Rows[0]["ContractStartDt"]).ToString("dd/MM/yyyy");
+                    }
+
+                    if (dsGetQuote.Tables[0].Rows[0]["ContractEndDt"] != DBNull.Value)
+                    {
+                        txtContractEndDt.Text = Convert.ToDateTime(dsGetQuote.Tables[0].Rows[0]["ContractEndDt"]).ToString("dd/MM/yyyy");
+                    }
+
+                    if (dsGetQuote.Tables[0].Rows[0]["ContractCopy"] != DBNull.Value)
+                    {
+                        lblContractCopy_Title.Text = "Download Contract";
+                        hdnContractCopyPath.Value = dsGetQuote.Tables[0].Rows[0]["ContractCopy"].ToString();
+                        imgbtnDownloadContract.Visible = true;
+                        fuUploadContractCopy.Visible = false;
+                        btnAddContractCopy.Visible = false;
+                        btnEditQuote.Visible = false;
+                    }
+                }
+            }
+
+            gvDocuments.DataBind();
+        }
+    }
+
+    protected void btnEditLead_Click(object sender, EventArgs e)
+    {
+        FormViewLead.ChangeMode(FormViewMode.Edit);
+        if (Session["LeadId"] != null)
+        {
+            GetLeadDetail(Convert.ToInt32(Session["LeadId"]));
+        }
+    }
+
+    protected void btnDeleteLead_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    protected void btnUpdateLead_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    protected void btnCancelLead_Click(object sender, EventArgs e)
+    {
+        FormViewLead.ChangeMode(FormViewMode.ReadOnly);
+        if (Session["LeadId"] != null)
+        {
+            FormViewLead.DataBind();
+        }
+    }
+
+    protected void btnBack_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("LeadTracking.aspx");
+    }
+
+    #endregion
+
+    #region Lead Form-View Update
+
+    protected void DataSourceLead_Updated(object sender, SqlDataSourceStatusEventArgs e)
+    {
+        int Result = Convert.ToInt32(e.Command.Parameters["@OutPut"].Value);
+        if (Result == 0)
+        {
+            lblError.Text = "Lead Detail Updated Successfully";
+            lblError.CssClass = "success";
+            FormViewLead.DataBind();
+            gvContacts.DataBind();
+        }
+        else if (Result == 1)
+        {
+            lblError.Text = "System Error! Please try after sometime";
+            lblError.CssClass = "errorMsg";
+        }
+        else if (Result == 2)
+        {
+            lblError.Text = "Company Name Does Not Exists.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void DataSourceLead_Selected(object sender, SqlDataSourceStatusEventArgs e)
+    {
+        if (e.Exception != null)
+        {
+            e.ExceptionHandled = true;
+            lblError.Text = e.Exception.Message;
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void DataSourceLead_Deleted(object sender, SqlDataSourceStatusEventArgs e)
+    {
+        int Result = Convert.ToInt32(e.Command.Parameters["@OutPut"].Value);
+        if (Result == 0)
+        {
+            lblError.Text = "Lead Deleted Successfully";
+            lblError.CssClass = "success";
+        }
+        else if (Result == 1)
+        {
+            lblError.Text = "System Error! Please try after sometime";
+            lblError.CssClass = "errorMsg";
+        }
+        else if (Result == 2)
+        {
+            lblError.Text = "Company Not Found!";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void FormViewLead_ItemDeleted(object sender, FormViewDeletedEventArgs e)
+    {
+        if (e.Exception != null)
+        {
+            e.ExceptionHandled = true;
+            lblError.Text = e.Exception.Message;
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void FormViewLead_ItemUpdated(object sender, FormViewUpdatedEventArgs e)
+    {
+        if (e.Exception != null || e.AffectedRows == -1)
+        {
+            e.KeepInEditMode = true;
+            e.ExceptionHandled = true;
+
+            if (e.Exception != null)
+            {
+                lblError.Text = e.Exception.Message;
+                lblError.CssClass = "errorMsg";
+            }
+        }
+    }
+
+    protected void FormViewLead_ItemInserted(object sender, FormViewInsertedEventArgs e)
+    {
+        if (e.Exception != null || e.AffectedRows == -1)
+        {
+            e.KeepInInsertMode = true;
+            e.ExceptionHandled = true;
+
+            if (e.Exception != null)
+            {
+                lblError.Text = e.Exception.Message;
+                lblError.CssClass = "errorMsg";
+            }
+        }
+    }
+
+    protected void FormViewLead_DataBound(object sender, EventArgs e)
+    {
+        Label lblTitle = (Label)Page.Master.FindControl("lblTitle");
+        DataRowView drView = (DataRowView)FormViewLead.DataItem;
+        if (drView != null)
+        {
+            if (FormViewLead.CurrentMode == FormViewMode.ReadOnly)
+            {
+                if (drView["RfqReceived"] != DBNull.Value)
+                {
+                    if (Convert.ToBoolean(drView["RfqReceived"]) == true)
+                    {
+                        ((Label)FormViewLead.FindControl("lblRFQReceived")).Text = "Yes";
+                    }
+                    else
+                    {
+                        ((Label)FormViewLead.FindControl("lblRFQReceived")).Text = "No";
+                    }
+                }
+            }
+
+            if (FormViewLead.CurrentMode == FormViewMode.Edit)
+            {
+                if (drView["RfqReceived"] != DBNull.Value)
+                {
+                    if (Convert.ToBoolean(drView["RfqReceived"]) == true)
+                    {
+                        ((CheckBox)FormViewLead.FindControl("chkRFQReceived")).Checked = true;
+                    }
+                    else
+                    {
+                        ((CheckBox)FormViewLead.FindControl("chkRFQReceived")).Checked = false;
+                    }
+                }
+            }
+        }
+
+        // Validate Form
+        Page.Validate("Required");
+    }
+
+    protected void FormViewLead_ItemUpdating(object sender, FormViewUpdateEventArgs e)
+    {
+        bool RFQRecd = false;
+        DropDownList ddlSource = (DropDownList)FormViewLead.FindControl("ddlSource");
+        DropDownList ddlCompanyType = (DropDownList)FormViewLead.FindControl("ddlCompanyType");
+        DropDownList ddlBusinessSector = (DropDownList)FormViewLead.FindControl("ddlBusinessSector");
+        DropDownList ddlBusinessCatg = (DropDownList)FormViewLead.FindControl("ddlBusinessCatg");
+        DropDownList ddlRole = (DropDownList)FormViewLead.FindControl("ddlRole");
+        CheckBox chkRFQReceived = (CheckBox)FormViewLead.FindControl("chkRFQReceived");
+
+        if (ddlSource != null)
+            e.NewValues["LeadSourceId"] = ddlSource.SelectedValue;
+        if (ddlCompanyType != null)
+            e.NewValues["CompanyTypeId"] = ddlCompanyType.SelectedValue;
+        if (ddlBusinessSector != null)
+            e.NewValues["SectorId"] = ddlBusinessSector.SelectedValue;
+        if (ddlBusinessCatg != null)
+            e.NewValues["CatgId"] = ddlBusinessCatg.SelectedValue;
+        if (ddlRole != null)
+            e.NewValues["RoleId"] = ddlRole.SelectedValue;
+
+        if (chkRFQReceived.Checked == true)
+        {
+            RFQRecd = true;
+        }
+        int result_RFQ = DBOperations.CRM_UpdateLeadRfqReceived(Convert.ToInt32(Session["LeadId"]), RFQRecd, LoggedInUser.glUserId);
+    }
+
+    #endregion
+
+    #region Services
+
+    protected void gvService_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower().Trim() == "deleterow")
+        {
+            int lid = Convert.ToInt32(e.CommandArgument.ToString());
+            if (lid > 0)
+            {
+                int result = DBOperations.CRM_DelLeadService(lid);
+                if (result == 0)
+                {
+                    lblError.Text = "Service Deleted Successfully";
+                    lblError.CssClass = "success";
+                    gvService.DataBind();
+                }
+                else if (result == 1)
+                {
+                    lblError.Text = "System Error! Please try after sometime";
+                    lblError.CssClass = "errorMsg";
+                }
+                else if (result == 2)
+                {
+                    lblError.Text = "Service Does Not Exists.";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+        }
+
+    }
+
+    #endregion
+
+    #region Quote/Contract
+
+    protected void imgbtnDownloadContract_Click(object sender, ImageClickEventArgs e)
+    {
+        if (hdnContractCopyPath.Value != "")
+        {
+            DownloadDocument(hdnContractCopyPath.Value);
+        }
+        else
+        {
+            lblError.Text = "No contract copy exists for this quote!";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void btnEditQuote_Click(object sender, EventArgs e)
+    {
+        if (hdnQuotationId.Value != "" && hdnQuotationId.Value != "0")
+        {
+            Session["QuotationId"] = hdnQuotationId.Value.Trim();
+            Response.Redirect("EditQuote.aspx");
+        }
+        else
+        {
+            lblError.Text = "Quotation does not exists! Please upload Quotation first.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void btnDownloadQuote_Click(object sender, EventArgs e)
+    {
+        if (hdnQuotationId.Value != "" && hdnQuotationId.Value != "0")
+        {
+            string DocPath = hdnQuotePath.Value.Trim();
+            if (DocPath != "")
+                DownloadDocument(DocPath);
+        }
+        else
+        {
+            lblError.Text = "Quotation does not exists! Please upload Quotation first.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void btnAddContractCopy_OnClick(object sender, EventArgs e)
+    {
+        string fileName = "";
+        //int result = 0;
+        if (fuUploadContractCopy != null && fuUploadContractCopy.HasFile)
+        {
+            fileName = UploadFiles(fuUploadContractCopy, "");
+
+            if (txtContractStartDt.Text.Trim() == "")
+            {
+                lblError.Text = "Please enter Contract Start Date.";
+                lblError.CssClass = "errorMsg";
+                return;
+            }
+
+            if (txtContractEndDt.Text.Trim() == "")
+            {
+                lblError.Text = "Please enter Contract End Date.";
+                lblError.CssClass = "errorMsg";
+                return;
+            }
+
+            if (txtContractStartDt.Text.Trim() != "")
+            {
+                DateTime dtContractStart = DateTime.MinValue;
+                DateTime dtContractEnd = DateTime.MinValue;
+                if (txtContractStartDt.Text.Trim() != "")
+                    dtContractStart = Commonfunctions.CDateTime(txtContractStartDt.Text.Trim());
+                if (txtContractEndDt.Text.Trim() != "")
+                    dtContractEnd = Commonfunctions.CDateTime(txtContractEndDt.Text.Trim());
+
+                int SaveUpdateDates = QuotationOperations.UpdateQuotationContractDates(Convert.ToInt32(hdnQuotationId.Value), dtContractStart, dtContractEnd, fileName, Convert.ToInt32(LoggedInUser.glUserId.ToString()));
+                if (SaveUpdateDates == 2)
+                {
+                    lblError.Text = "Document added successfully!";
+                    lblError.CssClass = "success";
+                    gvDocuments.DataBind();
+                    txtContractEndDt.Text = "";
+                    txtContractStartDt.Text = "";
+                    DateTime dtClose = DateTime.MinValue;
+
+                    int result_History = DBOperations.CRM_AddLeadStageHistory(Convert.ToInt32(Session["LeadId"]), 13, dtClose, "", LoggedInUser.glUserId);
+                    string message = "Contract uploaded for lead successfully! Lead moved to Contract Approval tab.";
+                    string url = "ContractApproval.aspx";
+                    string script = "window.onload = function(){ alert('";
+                    script += message;
+                    script += "');";
+                    script += "window.location = '";
+                    script += url;
+                    script += "'; }";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Redirect", script, true);
+                }
+                else if (SaveUpdateDates == 3)
+                {
+                    lblError.Text = "Quotation does not exists..!!";
+                    lblError.CssClass = "errorMsg";
+                }
+                else
+                {
+                    lblError.Text = "System error. Please try again later..!!";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+        }
+        else
+        {
+            lblError.Text = "Please add contract copy..!!";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void gvDocuments_RowCommand(Object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower() == "download")
+        {
+            string DocPath = e.CommandArgument.ToString();
+            DownloadDocument(DocPath);
+        }
+        else if (e.CommandName.ToLower() == "deletedoc")
+        {
+            int lid = Convert.ToInt32(e.CommandArgument.ToString());
+            if (lid != 0)
+            {
+                int result = QuotationOperations.DeleteAnnexureDocs(lid, Convert.ToInt32(LoggedInUser.glUserId));
+                if (result == 1)
+                {
+                    lblError.Text = "Successfully deleted document!";
+                    lblError.CssClass = "success";
+                    gvDocuments.DataBind();
+                }
+                else
+                {
+                    lblError.Text = "System Error! Please Try After Sometime.";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+        }
+    }
+
+    protected void DownloadDocument(string DocumentPath)
+    {
+        //DocumentPath =  QuotationOperations.GetDocumentPath(Convert.ToInt32(DocumentId));
+        string ServerPath = FileServer.GetFileServerDir();
+
+        if (ServerPath == "")
+        {
+            ServerPath = HttpContext.Current.Server.MapPath("..\\UploadFiles\\Quotation\\" + DocumentPath);
+        }
+        else
+        {
+            ServerPath = ServerPath + "Quotation\\" + DocumentPath;
+        }
+        try
+        {
+            HttpResponse response = Page.Response;
+            FileDownload.Download(response, ServerPath, DocumentPath);
+        }
+        catch (Exception )
+        {
+        }
+    }
+
+    protected string UploadFiles(FileUpload FU, string FilePath)
+    {
+        string FileName = FU.FileName;
+
+        string ServerFilePath = FileServer.GetFileServerDir();
+
+        if (ServerFilePath == "")
+        {
+            // Application Directory Path
+            ServerFilePath = Server.MapPath("..\\UploadFiles\\Quotation\\" + FilePath);
+        }
+        else
+        {
+            // File Server Path
+            ServerFilePath = ServerFilePath + "Quotation\\" + FilePath;
+        }
+
+        if (!System.IO.Directory.Exists(ServerFilePath))
+        {
+            System.IO.Directory.CreateDirectory(ServerFilePath);
+        }
+        if (FU.FileName != string.Empty)
+        {
+            if (System.IO.File.Exists(ServerFilePath + FileName))
+            {
+                string ext = Path.GetExtension(FU.FileName);
+                FileName = Path.GetFileNameWithoutExtension(FU.FileName);
+
+                string FileId = RandomString(5);
+
+                FileName += "_" + FileId + ext;
+            }
+
+            FU.SaveAs(ServerFilePath + FileName);
+
+            return FilePath + FileName;
+        }
+        else
+        {
+            return "";
+        }
+
+    }
+
+    protected string RandomString(int size)
+    {
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < size; i++)
+        {
+
+            //26 letters in the alfabet, ascii + 65 for the capital letters
+            builder.Append(Convert.ToChar(Convert.ToInt32(Math.Floor(26 * _random.NextDouble() + 65))));
+
+        }
+        return builder.ToString();
+    }
+
+    #endregion
+
+    #region Contacts
+
+    protected void btnAddContact_Click(object sender, EventArgs e)
+    {
+        if (hdnCompanyId.Value != "0" && hdnCompanyId.Value != "")
+        {
+            int result = DBOperations.CRM_AddContactDetail(txtContactName.Text.Trim(), Convert.ToInt32(hdnCompanyId.Value), txtDesignation.Text.Trim(),
+                                         Convert.ToInt16(ddlRole.SelectedValue), txtMobileNo.Text.Trim(), txtEmail.Text.Trim(), txtContactNo.Text.Trim(),
+                                         txtContactAddress.Text.Trim(), txtDescription.Text.Trim(), LoggedInUser.glUserId);
+            if (result > 0)
+            {
+                lblError.Text = "Contact added successfully!";
+                lblError.CssClass = "success";
+                gvContacts.DataBind();
+            }
+            else if (result == -2)
+            {
+                lblError.Text = "Contact already exists!";
+                lblError.CssClass = "success";
+            }
+            else
+            {
+                lblError.Text = "System error! Please try again later.";
+                lblError.CssClass = "success";
+            }
+        }
+        else
+        {
+            lblError.Text = "No Company found for this lead! Please check before saving contact.";
+            lblError.CssClass = "errorMsg";
+            return;
+        }
+    }
+
+    protected void btnCancelContact_Click(object sender, EventArgs e)
+    {
+        gvContacts.DataBind();
+        txtContactAddress.Text = "";
+        txtContactName.Text = "";
+        txtDescription.Text = "";
+        txtDesignation.Text = "";
+        txtEmail.Text = "";
+        txtMobileNo.Text = ""; 
+        txtContactNo.Text = "";
+        lblError.Text = "";
+    }
+
+    #endregion
+
+    #region Visit Report
+    protected void btnAddVisitReport_Click(object sender, EventArgs e)
+    {
+        DateTime dtVisitDate = DateTime.MinValue;
+        if (txtVisitDate.Text.Trim() != "")
+            dtVisitDate = Commonfunctions.CDateTime(txtVisitDate.Text.Trim());
+
+        int result = DBOperations.CRM_AddVisitReport(Convert.ToInt32(Session["LeadId"]), dtVisitDate,Convert.ToInt32(ddCategory.SelectedValue), txtVisitRemark.Text.Trim(), LoggedInUser.glUserId);
+        if (result == 0)
+        {
+            lblError.Text = "Visit Report Added Successfully";
+            lblError.CssClass = "success";
+            txtVisitRemark.Text = "";
+            txtVisitDate.Text = "";
+            gvVisitReport.DataBind();
+        }
+        else if (result == 1)
+        {
+            lblError.Text = "System Error! Please try after sometime";
+            lblError.CssClass = "errorMsg";
+        }
+        else if (result == 2)
+        {
+            lblError.Text = "Visit Report Already Exists for same date!";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void btnCancelVisitReport_Click(object sender, EventArgs e)
+    {
+        txtVisitDate.Text = "";
+        txtVisitRemark.Text = "";
+        lblError.Text = "";
+    }
+
+    protected void gvVisitReport_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower().Trim() == "deleterow")
+        {
+            int lid = Convert.ToInt32(e.CommandArgument.ToString());
+            if (lid > 0)
+            {
+                int result = DBOperations.CRM_DelVisitReport(lid, LoggedInUser.glUserId);
+                if (result == 0)
+                {
+                    lblError.Text = "Visit Report Deleted Successfully";
+                    lblError.CssClass = "success";
+                    txtVisitRemark.Text = "";
+                    txtVisitDate.Text = "";
+                    gvVisitReport.DataBind();
+                }
+                else if (result == 1)
+                {
+                    lblError.Text = "System Error! Please try after sometime";
+                    lblError.CssClass = "errorMsg";
+                }
+                else if (result == 2)
+                {
+                    lblError.Text = "Visit Report Does Not Exists!";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+        }
+    }
+
+    #endregion
+
+    #region MOM
+
+    protected void btnSaveMOM_Click(object sender, EventArgs e)
+    {
+        //btnSendMail.Enabled = false;
+        AddNewRow_Agenda();
+        if (txtMeetingTitle.Text.Trim() != "")
+        {
+            DateTime MeetingDate = DateTime.MinValue, StartTime = DateTime.MinValue, EndTime = DateTime.MinValue;
+            if (txtMeetingDate.Text.Trim() != "")
+                MeetingDate = Commonfunctions.CDateTime(txtMeetingDate.Text.Trim());
+
+            if (txtStartTime.Text.Trim() != "")
+                StartTime = Convert.ToDateTime(txtStartTime.Text.Trim());
+
+            if (txtEndTime.Text.Trim() != "")
+                EndTime = Convert.ToDateTime(txtEndTime.Text.Trim());
+
+            if (gvExistingAttendee == null || gvExistingAttendee.Rows.Count == 0)
+            {
+                lblError.Text = "Please enter atleast one attendee.";
+                lblError.CssClass = "errorMsg";
+                return;
+            }
+
+            if (gvAgenda == null || gvAgenda.Rows.Count == 0)
+            {
+                lblError.Text = "Please enter atleast one agenda.";
+                lblError.CssClass = "errorMsg";
+                return;
+            }
+
+            if (Session["LeadId"] != null)
+            {
+                int SaveMeeting = DBOperations.CRM_AddOpportunity_MOM(Convert.ToInt32(Session["LeadId"]), txtMeetingTitle.Text.Trim(), MeetingDate,
+                            StartTime, EndTime, txtObservers.Text.Trim(), txtResources.Text.Trim(), txtSpecialNotes.Text.Trim(), LoggedInUser.glUserId,
+                            false, Convert.ToInt32(hdnCompanyId.Value));
+                if (SaveMeeting != -123)
+                {
+                    //Add up attendee for MOM
+                    if (gvExistingAttendee != null)
+                    {
+                        for (int i = 0; i < gvExistingAttendee.Rows.Count; i++)
+                        {
+                            int UserId = 0;
+                            Label lblUserId = (Label)gvExistingAttendee.Rows[i].FindControl("lblUserId");
+                            Label lblUserName = (Label)gvExistingAttendee.Rows[i].FindControl("lblUserName");
+                            Label lblEmailId = (Label)gvExistingAttendee.Rows[i].FindControl("lblEmailId");
+
+                            if (lblUserId.Text.Trim() != "" && lblUserId.Text.Trim() != "0")
+                                UserId = Convert.ToInt32(lblUserId.Text.Trim());
+                            if (lblEmailId.Text != "")
+                            {
+                                int SaveAttendee = DBOperations.CRM_AddMOM_Attendee(SaveMeeting, lblUserName.Text.Trim(), lblEmailId.Text.Trim(), UserId, LoggedInUser.glUserId);
+                            }
+                        }
+                    }
+
+                    // Add Agenda Info
+                    if (gvAgenda != null && gvAgenda.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < gvAgenda.Rows.Count; i++)
+                        {
+                            TextBox txtTopic = (TextBox)gvAgenda.Rows[i].FindControl("txtTopic");
+                            TextBox txtDescription = (TextBox)gvAgenda.Rows[i].FindControl("txtDescription");
+                            TextBox txtPersonName = (TextBox)gvAgenda.Rows[i].FindControl("txtPersonName");
+
+                            if (txtTopic.Text != "")
+                            {
+                                int SaveAgenda = DBOperations.CRM_AddMOM_Agenda(SaveMeeting, txtTopic.Text.Trim(), txtDescription.Text.Trim(), txtPersonName.Text.Trim(), LoggedInUser.glUserId);
+                            }
+                        }
+                    }
+
+                    lblError.Text = "Successfully added Minutes of Meeting.";
+                    lblError.CssClass = "success";
+                    hdnMomId_Popup.Value = SaveMeeting.ToString();
+                    ShowPopup(SaveMeeting);
+                    //string str_Message = "<script type='text/javascript' language='javascript'>" +
+                    //      "_toastr('Successfully added Minutes of Meeting.','top-full-width','success',false); </script>";
+                    //ScriptManager.RegisterStartupScript(this, typeof(Button), "Message", str_Message, false);
+                    //return;
+                }
+                else
+                {
+                    lblError.Text = "Error while sending mail. Please try gaian later.";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+            else
+            {
+                lblError.Text = "Please select lead ref no to send MOM for.";
+                lblError.CssClass = "errorMsg";
+            }
+        }
+        else
+        {
+            lblError.Text = "Please Enter Meeting title.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void btnSendMail_OnClick(object sender, EventArgs e)
+    {
+        if (hdnMomId_Popup.Value != "" && hdnMomId_Popup.Value != "0")
+        {
+            bool bSuccess = SendEmail(Convert.ToInt32(hdnMomId_Popup.Value));
+            if (bSuccess == true)
+            {
+                lblError.Text = "MOM successfully been added! Thank You.";
+                lblError.CssClass = "success";
+                txtMeetingDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                txtMeetingTitle.Text = "";
+                //txtNewAttendeeEmail.Text = "";
+                //txtNewAttendeeName.Text = "";
+
+            }
+            else
+            {
+                lblError.Text = "Error while sending mail. Please try again later.";
+                lblError.CssClass = "errorMsg";
+            }
+        }
+    }
+
+    protected void btnCancelMOM_Click(object sender, EventArgs e)
+    {
+        txtMeetingDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+        txtMeetingTitle.Text = "";
+        txtStartTime.Text = "";
+        txtEndTime.Text = "";
+        txtResources.Text = "";
+        txtObservers.Text = "";
+        txtSpecialNotes.Text = "";
+        ViewState["Agenda"] = null;
+        ViewState["Attendee"] = null;
+        gvAgenda.DataBind();
+        gvExistingAttendee.DataBind();
+        SetInitialRow_Agenda();
+    }
+
+    protected void btnCancelPopup_OnClick(object sender, EventArgs e)
+    {
+        ModalPopupEmail.Hide();
+    }
+
+    protected void ShowPopup(int MomId)
+    {
+        //bool bEmailSuccess = false;
+        StringBuilder strbuilder = new StringBuilder();
+        StringBuilder strbuilder_Attendee = new StringBuilder();
+        StringBuilder strAttendeeEmail = new StringBuilder();
+
+        if (MomId > 0)
+        {
+            string strMeetingTitle = "", strClient = "", strMeetingDate = "", strStartTime = "", strEndTime = "", strCustomerEmail = "",
+                strCCEmail = "",  MessageBody = "", strObservers = "", strResources = "", strNotes = "", strMomCreatedBy = "", strMomCreatedByMail = ""; //strBCCEmail = "", strSubject = "",
+
+            //Get Basic Detail - Title, date, time
+            DataSet dsGetMeetingDetail = DBOperations.CRM_GetOpportunity_MOM_Lid(MomId);
+            if (dsGetMeetingDetail != null && dsGetMeetingDetail.Tables[0].Rows.Count > 0)
+            {
+                if (dsGetMeetingDetail.Tables[0].Rows[0]["lid"] != DBNull.Value)
+                {
+                    strMeetingTitle = dsGetMeetingDetail.Tables[0].Rows[0]["Title"].ToString();
+                    strMeetingDate = Convert.ToDateTime(dsGetMeetingDetail.Tables[0].Rows[0]["Date"]).ToString("MMMM dd, yyyy");
+                    if (dsGetMeetingDetail.Tables[0].Rows[0]["StartTime"] != DBNull.Value)
+                        strStartTime = Convert.ToDateTime(dsGetMeetingDetail.Tables[0].Rows[0]["StartTime"]).ToString("HH: mm tt");
+                    if (dsGetMeetingDetail.Tables[0].Rows[0]["EndTime"] != DBNull.Value)
+                        strEndTime = Convert.ToDateTime(dsGetMeetingDetail.Tables[0].Rows[0]["EndTime"]).ToString("HH: mm tt");
+                    strClient = dsGetMeetingDetail.Tables[0].Rows[0]["CompanyName"].ToString();
+                    strObservers = dsGetMeetingDetail.Tables[0].Rows[0]["Observers"].ToString();
+                    strResources = dsGetMeetingDetail.Tables[0].Rows[0]["Resources"].ToString();
+                    strNotes = dsGetMeetingDetail.Tables[0].Rows[0]["SpecialNotes"].ToString();
+                    strMomCreatedBy = dsGetMeetingDetail.Tables[0].Rows[0]["CreatedBy"].ToString();
+                    strMomCreatedByMail = dsGetMeetingDetail.Tables[0].Rows[0]["CreatedByMail"].ToString();
+                    strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMeetingDetail.Tables[0].Rows[0]["CompContactName"].ToString());
+                    strAttendeeEmail = strAttendeeEmail.Append(dsGetMeetingDetail.Tables[0].Rows[0]["CompContactEmail"].ToString());
+                }
+
+                // Get Attendees Name
+                DataSet dsGetMom_Attendee = DBOperations.CRM_GetMom_Attendee(MomId);
+                if (dsGetMom_Attendee != null && dsGetMom_Attendee.Tables[0].Rows.Count > 0)
+                {
+                    if (dsGetMom_Attendee.Tables[0].Rows.Count > 1)
+                    {
+                        strbuilder_Attendee = strbuilder_Attendee.Append(" , ");
+                        strAttendeeEmail = strAttendeeEmail.Append(" , ");
+                        for (int a = 0; a < dsGetMom_Attendee.Tables[0].Rows.Count; a++)
+                        {
+                            if (a != dsGetMom_Attendee.Tables[0].Rows.Count - 1)
+                            {
+                                strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserName"].ToString() + " , ");
+                                strAttendeeEmail = strAttendeeEmail.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserEmail"].ToString() + " , ");
+                            }
+                            else
+                            {
+                                strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserName"].ToString());
+                                strAttendeeEmail = strAttendeeEmail.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserEmail"].ToString());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strbuilder_Attendee = strbuilder_Attendee.Append(" , ");
+                        strAttendeeEmail = strAttendeeEmail.Append(" , ");
+                        strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMom_Attendee.Tables[0].Rows[0]["UserName"].ToString());
+                        strAttendeeEmail = strAttendeeEmail.Append(dsGetMom_Attendee.Tables[0].Rows[0]["UserEmail"].ToString());
+                    }
+                }
+            }
+
+            // Email Format
+            strCustomerEmail = lblCustomerEmail.Text.Trim(); // strAttendeeEmail.ToString();  //"jr.developer@babajishivram.com";// strAttendeeEmail.ToString();  
+            strCCEmail =  txtMailCC.Text.Trim(); // "dhaval@babajishivram.com , kirti@babajishivram.com";
+            try
+            {
+                StringBuilder strStyle = new StringBuilder();
+                strStyle = strStyle.Append("<html><body class='setupTab' style='font-family:Calibri; font-style:normal; bEditID: b1st1; bLabel: body;'><center>");
+
+                // email css
+                strStyle = strStyle.Append(@"<style type='text/css'> p {margin-top: 0px; margin-bottom: 0px;} font {color: black;}");
+                strStyle = strStyle.Append(@".topTr {font-family:Calibri; font-style:normal;border: 2px solid darkgray;border-bottom: none;bEditID: r3st1;color: white;bLabel: main;font-size: 12pt;font-family: calibri;height: 35px;background-color: #268CD8;}");
+                strStyle = strStyle.Append(@".MeetingTitle {font-family:Calibri; font-style:normal;font-size: 19px;text-align: right;font-weight: 600;color: #268CD8;} .MeetingDate {font-size: 13px;text-align: right;color: black;font-weight: 400;} ");
+                strStyle = strStyle.Append(@".MOMHdr {font-family:Calibri; font-style:normal; color:black; padding:4px;} .csTitle {font-family:Calibri; font-style:normal;color: #268CD8;} .AgendaHdr {padding: 7px;background-color: #268CD8;color: white;} ");
+                strStyle = strStyle.Append(@".AgendaHdr {font-family:Calibri; font-style:normal;padding: 7px;background - color: #268CD8;color: white;font - weight: 500;text-align:center}");
+                strStyle = strStyle.Append(@".AgendaBody {font-family:Calibri; font-style:normal;padding-left: 7px;padding-right: 7px;color: black;font - weight: 400;}");
+                strStyle = strStyle.Append(@".AgendaBodySL {font-family:Calibri; font-style:normal;padding-left: 7px;padding-right: 7px;color: black;font - weight: 400;text - align: center;}");
+                strStyle = strStyle.Append(@"</style>");
+
+                // body header
+                strStyle = strStyle.Append(@"<table cellpadding='0' width='850' cellspacing='0' id='topTable'><tr valign='top'>");
+                strStyle = strStyle.Append(@"<td styleInsert='1' height='150' style='border:1px solid darkgray; border-radius: 6px; bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:calibri;'>");
+                strStyle = strStyle.Append(@"<table border='0' cellpadding='5' width='850' cellspacing='5' height='150' style='padding:10px'>");
+                strStyle = strStyle.Append(@"<tr><td class='MeetingTitle'>" + strMeetingTitle + "<br /><span class='MeetingDate'>" + strMeetingDate + " at " + strStartTime);
+                strStyle = strStyle.Append(@"</span></td></tr><tr><td styleInsert='1' style='border-bottom:1px solid #268CD8'></td></tr>");
+
+                // body middle portion
+                strStyle = strStyle.Append(@"<tr><td><div class='subtle-wrap' style='box-sizing: border-box; padding: 5px 10px 20px; margin-top: 2px;'>");
+                strStyle = strStyle.Append(@"<div class='content-body article-body' style='box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;'>");
+                strStyle = strStyle.Append(@"<p style='color: rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;'>");
+                strStyle = strStyle.Append(@"<table border='0' cellpadding='0' cellspacing='0' width='99%'><colgroup><col width='50%' /><col width='50%' /></colgroup>");
+                strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Client : </b>&nbsp;" + strClient + "</td></tr>");
+                strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Duration : </b>&nbsp;" + strStartTime + " - " + strEndTime + "</td><td style='color: black; padding: 4px'>");
+                strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Participants : </b>&nbsp;" + txtParticipants.Text.Trim() + "</td></tr>");
+                strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Resources : </b>&nbsp;" + strResources + "</td></tr>");
+                strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Observers : </b>&nbsp;" + strObservers + "</td></tr>");
+                strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Special Notes : </b>&nbsp;" + strNotes + "</td></tr>");
+                strStyle = strStyle.Append(@"</table></p></div></div></td></tr>");
+
+                // agenda table
+                strStyle = strStyle.Append(@"<tr><td><div class='subtle-wrap' style='box-sizing: border-box; padding: 5px 10px 20px; margin-top: 2px;'>");
+                strStyle = strStyle.Append(@"<div class='content-body article-body' style='box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;'>");
+                strStyle = strStyle.Append(@"<p style='color:rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;'>");
+                strStyle = strStyle.Append(@"<table border='0' cellpadding='0' cellspacing='0' width='99%'><colgroup><col width='5%' /><col width='30%' /><col width='45%' /><col width='20%' /></colgroup>");
+                strStyle = strStyle.Append(@"<tr><td class='AgendaHdr'>Sr.No.</td><td class='AgendaHdr'>Agenda</td><td class='AgendaHdr'>Description</td><td class='AgendaHdr'>Presenter</td></tr>");
+                DataSet dsGetMom_Agenda = DBOperations.CRM_GetMOM_Agenda(MomId);
+                if (dsGetMom_Agenda != null && dsGetMom_Agenda.Tables[0].Rows.Count > 0)
+                {
+                    int SL = 0;
+                    for (int a = 0; a < dsGetMom_Agenda.Tables[0].Rows.Count; a++)
+                    {
+                        SL++;
+                        strStyle = strStyle.Append(@"<tr>");
+                        strStyle = strStyle.Append(@"<td style='border: 1px solid #ccc;' class='AgendaBodySL'>" + SL.ToString() + "</td>");
+                        strStyle = strStyle.Append(@"<td style='border: 1px solid #ccc;' class='AgendaBody'>" + dsGetMom_Agenda.Tables[0].Rows[a]["Topic"].ToString() + "</td>");
+                        strStyle = strStyle.Append(@"<td style='border: 1px solid #ccc;' class='AgendaBody'>" + dsGetMom_Agenda.Tables[0].Rows[a]["Description"].ToString() + "</td>");
+                        strStyle = strStyle.Append(@"<td style='border: 1px solid #ccc;' class='AgendaBody'>" + dsGetMom_Agenda.Tables[0].Rows[a]["PersonName"].ToString() + "</td>");
+                        strStyle = strStyle.Append(@"</tr>");
+                    }
+                }
+                strStyle = strStyle.Append(@"</table></p></div></div></td>");
+
+                // body footer
+                strStyle = strStyle.Append(@"</table></td></tr><tr><td styleInsert='1' height='80' class='topTr' style=''>");
+                strStyle = strStyle.Append(@"<p style='text-align: center; font-weight: 500;font-size: 12pt; padding: 15px;'>");
+                strStyle = strStyle.Append(@"<font style='color:white; padding-top: 10px'><b> &nbsp; &nbsp; Note*: </b>This is system generated mail, please do not reply to this message via e-mail.");
+                strStyle = strStyle.Append(@"</font></p></td></tr></table>");
+                strStyle = strStyle.Append(@"</center></body></html>");
+
+                MessageBody = strStyle.ToString();
+                lblCustomerEmail.Text = strAttendeeEmail.ToString();
+                txtParticipants.Text = strbuilder_Attendee.ToString();
+                txtSubject.Text = "Minutes of Meeting - " + strMeetingTitle + " as held on " + strMeetingDate;
+                txtMailCC.Text = strMomCreatedByMail;
+
+                divPreviewEmail.InnerHtml = MessageBody.ToString();
+                ModalPopupEmail.Show();
+            }
+            catch (Exception en)
+            {
+            }
+        }
+    }
+
+    protected bool SendEmail(int MomId)
+    {
+        bool bEmailSuccess = false;
+        StringBuilder strbuilder = new StringBuilder();
+        StringBuilder strbuilder_Attendee = new StringBuilder();
+        StringBuilder strAttendeeEmail = new StringBuilder();
+
+        if (MomId > 0)
+        {
+            string strMeetingTitle = "", strClient = "", strMeetingDate = "", strStartTime = "", strEndTime = "", strCustomerEmail = "",
+                strCCEmail = "", strBCCEmail = "", strSubject = "", MessageBody = "", strObservers = "", strResources = "", strNotes = "", strMomCreatedBy = "", strMomCreatedByMail = "";
+
+            //Get Basic Detail - Title, date, time
+            DataSet dsGetMeetingDetail = DBOperations.CRM_GetOpportunity_MOM_Lid(MomId);
+            if (dsGetMeetingDetail != null && dsGetMeetingDetail.Tables[0].Rows.Count > 0)
+            {
+                if (dsGetMeetingDetail.Tables[0].Rows[0]["lid"] != DBNull.Value)
+                {
+                    strMeetingTitle = dsGetMeetingDetail.Tables[0].Rows[0]["Title"].ToString();
+                    strMeetingDate = Convert.ToDateTime(dsGetMeetingDetail.Tables[0].Rows[0]["Date"]).ToString("MMMM dd, yyyy");
+                    if (dsGetMeetingDetail.Tables[0].Rows[0]["StartTime"] != DBNull.Value)
+                        strStartTime = Convert.ToDateTime(dsGetMeetingDetail.Tables[0].Rows[0]["StartTime"]).ToString("HH: mm tt");
+                    if (dsGetMeetingDetail.Tables[0].Rows[0]["EndTime"] != DBNull.Value)
+                        strEndTime = Convert.ToDateTime(dsGetMeetingDetail.Tables[0].Rows[0]["EndTime"]).ToString("HH: mm tt");
+                    strClient = dsGetMeetingDetail.Tables[0].Rows[0]["CompanyName"].ToString();
+                    strObservers = dsGetMeetingDetail.Tables[0].Rows[0]["Observers"].ToString();
+                    strResources = dsGetMeetingDetail.Tables[0].Rows[0]["Resources"].ToString();
+                    strNotes = dsGetMeetingDetail.Tables[0].Rows[0]["SpecialNotes"].ToString();
+                    strMomCreatedBy = dsGetMeetingDetail.Tables[0].Rows[0]["CreatedBy"].ToString();
+                    strMomCreatedByMail = dsGetMeetingDetail.Tables[0].Rows[0]["CreatedByMail"].ToString();
+                    strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMeetingDetail.Tables[0].Rows[0]["CompContactName"].ToString());
+                    strAttendeeEmail = strAttendeeEmail.Append(dsGetMeetingDetail.Tables[0].Rows[0]["CompContactEmail"].ToString());
+                }
+
+                // Get Attendees Name
+                DataSet dsGetMom_Attendee = DBOperations.CRM_GetMom_Attendee(MomId);
+                if (dsGetMom_Attendee != null && dsGetMom_Attendee.Tables[0].Rows.Count > 0)
+                {
+                    if (dsGetMom_Attendee.Tables[0].Rows.Count > 1)
+                    {
+                        strbuilder_Attendee = strbuilder_Attendee.Append(" , ");
+                        strAttendeeEmail = strAttendeeEmail.Append(" , ");
+                        for (int a = 0; a < dsGetMom_Attendee.Tables[0].Rows.Count; a++)
+                        {
+                            if (a != dsGetMom_Attendee.Tables[0].Rows.Count - 1)
+                            {
+                                strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserName"].ToString() + " , ");
+                                strAttendeeEmail = strAttendeeEmail.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserEmail"].ToString() + " , ");
+                            }
+                            else
+                            {
+                                strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserName"].ToString());
+                                strAttendeeEmail = strAttendeeEmail.Append(dsGetMom_Attendee.Tables[0].Rows[a]["UserEmail"].ToString());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strbuilder_Attendee = strbuilder_Attendee.Append(" , ");
+                        strAttendeeEmail = strAttendeeEmail.Append(" , ");
+                        strbuilder_Attendee = strbuilder_Attendee.Append(dsGetMom_Attendee.Tables[0].Rows[0]["UserName"].ToString());
+                        strAttendeeEmail = strAttendeeEmail.Append(dsGetMom_Attendee.Tables[0].Rows[0]["UserEmail"].ToString());
+                    }
+                }
+            }
+            else
+                return false;
+
+            // Email Format
+            strCustomerEmail = lblCustomerEmail.Text.Trim(); // strAttendeeEmail.ToString();  //"jr.developer@babajishivram.com";// strAttendeeEmail.ToString();  
+            strCCEmail = txtMailCC.Text.Trim(); // "dhaval@babajishivram.com , kirti@babajishivram.com";
+            strSubject = "Minutes of Meeting - " + strMeetingTitle + " as held on " + strMeetingDate;
+
+            if (strCustomerEmail == "" || strSubject == "")
+                return false;
+            else
+            {
+                try
+                {
+                    StringBuilder strStyle = new StringBuilder();
+                    strStyle = strStyle.Append("<html><body class='setupTab' style='font-family:Calibri; font-style:normal; bEditID: b1st1; bLabel: body;'><center>");
+
+                    // email css
+                    strStyle = strStyle.Append(@"<style type='text/css'> p {margin-top: 0px; margin-bottom: 0px;} font {color: black;}");
+                    strStyle = strStyle.Append(@".topTr {font-family:Calibri; font-style:normal;border: 2px solid darkgray;border-bottom: none;bEditID: r3st1;color: white;bLabel: main;font-size: 12pt;font-family: calibri;height: 35px;background-color: #268CD8;}");
+                    strStyle = strStyle.Append(@".MeetingTitle {font-family:Calibri; font-style:normal;font-size: 19px;text-align: right;font-weight: 600;color: #268CD8;} .MeetingDate {font-size: 13px;text-align: right;color: black;font-weight: 400;} ");
+                    strStyle = strStyle.Append(@".MOMHdr {font-family:Calibri; font-style:normal; color:black; padding:4px;} .csTitle {font-family:Calibri; font-style:normal;color: #268CD8;} .AgendaHdr {padding: 7px;background-color: #268CD8;color: white;} ");
+                    strStyle = strStyle.Append(@".AgendaHdr {font-family:Calibri; font-style:normal;padding: 7px;background - color: #268CD8;color: white;font - weight: 500;text-align:center}");
+                    strStyle = strStyle.Append(@".AgendaBody {font-family:Calibri; font-style:normal;padding-left: 7px;padding-right: 7px;color: black;font - weight: 400;}");
+                    strStyle = strStyle.Append(@".AgendaBodySL {font-family:Calibri; font-style:normal;padding-left: 7px;padding-right: 7px;color: black;font - weight: 400;text - align: center;}");
+                    strStyle = strStyle.Append(@"</style>");
+
+                    // body header
+                    strStyle = strStyle.Append(@"<table cellpadding='0' width='850' cellspacing='0' id='topTable'><tr valign='top'>");
+                    strStyle = strStyle.Append(@"<td styleInsert='1' height='150' style='border:1px solid darkgray; border-radius: 6px; bEditID:r3st1; color:#000000; bLabel:main; font-size:12pt; font-family:calibri;'>");
+                    strStyle = strStyle.Append(@"<table border='0' cellpadding='5' width='850' cellspacing='5' height='150' style='padding:10px'>");
+                    strStyle = strStyle.Append(@"<tr><td class='MeetingTitle'>" + strMeetingTitle + "<br /><span class='MeetingDate'>" + strMeetingDate + " at " + strStartTime);
+                    strStyle = strStyle.Append(@"</span></td></tr><tr><td styleInsert='1' style='border-bottom:1px solid #268CD8'></td></tr>");
+
+                    // body middle portion
+                    strStyle = strStyle.Append(@"<tr><td><div class='subtle-wrap' style='box-sizing: border-box; padding: 5px 10px 20px; margin-top: 2px;'>");
+                    strStyle = strStyle.Append(@"<div class='content-body article-body' style='box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;'>");
+                    strStyle = strStyle.Append(@"<p style='color: rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;'>");
+                    strStyle = strStyle.Append(@"<table border='0' cellpadding='0' cellspacing='0' width='99%'><colgroup><col width='50%' /><col width='50%' /></colgroup>");
+                    strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Client : </b>&nbsp;" + strClient + "</td></tr>");
+                    strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Duration : </b>&nbsp;" + strStartTime + " - " + strEndTime + "</td><td style='color: black; padding: 4px'>");
+                    strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Participants : </b>&nbsp;" + txtParticipants.Text.Trim() + "</td></tr>");
+                    strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Resources : </b>&nbsp;" + strResources + "</td></tr>");
+                    strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Observers : </b>&nbsp;" + strObservers + "</td></tr>");
+                    strStyle = strStyle.Append(@"<tr><td class='MOMHdr'><b class='csTitle'>Special Notes : </b>&nbsp;" + strNotes + "</td></tr>");
+                    strStyle = strStyle.Append(@"</table></p></div></div></td></tr>");
+
+                    // agenda table
+                    strStyle = strStyle.Append(@"<tr><td><div class='subtle-wrap' style='box-sizing: border-box; padding: 5px 10px 20px; margin-top: 2px;'>");
+                    strStyle = strStyle.Append(@"<div class='content-body article-body' style='box-sizing: border-box; word-wrap: break-word; line-height: 20px; margin-top: 6px;'>");
+                    strStyle = strStyle.Append(@"<p style='color:rgb(0, 0, 0); font-family: calibri; font-size: 12pt; box-sizing: border-box;'>");
+                    strStyle = strStyle.Append(@"<table border='1' cellpadding='0' cellspacing='0' width='99%'><colgroup><col width='5%' /><col width='30%' /><col width='45%' /><col width='20%' /></colgroup>");
+                    strStyle = strStyle.Append(@"<tr><td class='AgendaHdr'>Sr.No.</td><td class='AgendaHdr'>Agenda</td><td class='AgendaHdr'>Description</td><td class='AgendaHdr'>Presenter</td></tr>");
+                    DataSet dsGetMom_Agenda = DBOperations.CRM_GetMOM_Agenda(MomId);
+                    if (dsGetMom_Agenda != null && dsGetMom_Agenda.Tables[0].Rows.Count > 0)
+                    {
+                        int SL = 0;
+                        for (int a = 0; a < dsGetMom_Agenda.Tables[0].Rows.Count; a++)
+                        {
+                            SL++;
+                            strStyle = strStyle.Append(@"<tr>");
+                            strStyle = strStyle.Append(@"<td class='AgendaBodySL'>" + SL.ToString() + "</td>");
+                            strStyle = strStyle.Append(@"<td class='AgendaBody'>" + dsGetMom_Agenda.Tables[0].Rows[a]["Topic"].ToString() + "</td>");
+                            strStyle = strStyle.Append(@"<td class='AgendaBody'>" + dsGetMom_Agenda.Tables[0].Rows[a]["Description"].ToString() + "</td>");
+                            strStyle = strStyle.Append(@"<td class='AgendaBody'>" + dsGetMom_Agenda.Tables[0].Rows[a]["PersonName"].ToString() + "</td>");
+                            strStyle = strStyle.Append(@"</tr>");
+                        }
+                    }
+                    strStyle = strStyle.Append(@"</table></p></div></div></td>");
+
+                    // body footer
+                    strStyle = strStyle.Append(@" </table></td></tr><tr><td styleInsert='1' height='80' class='topTr' style=''>");
+                    strStyle = strStyle.Append(@"<p style='text-align: left; font-weight: 500;font-size: 12pt; padding: 15px;'>");
+                    strStyle = strStyle.Append(@"<font style='color:white; padding-top: 10px'><b> &nbsp; &nbsp; Note*: </b>This is system generated mail, please do not reply to this message via e-mail.");
+                    strStyle = strStyle.Append(@"</font></p></td></tr></table>");
+                    strStyle = strStyle.Append(@"</center></body></html>");
+
+                    List<string> lstDocPath = new List<string>();
+                    MessageBody = strStyle.ToString();
+                    bEmailSuccess = EMail.SendMailMultiAttach(strCustomerEmail, strCustomerEmail, strCCEmail, strSubject, MessageBody, lstDocPath);
+                    return bEmailSuccess;
+                }
+                catch (Exception en)
+                {
+                    return false;
+                }
+            }
+
+        }
+        else
+            return false;
+    }
+
+    protected void txtParticipants_TextChanged(object sender, EventArgs e)
+    {
+        //ShowPopup(Convert.ToInt32(hdnMomId_Popup.Value));
+        ModalPopupEmail.Show();
+    }
+
+    protected void txtSubject_TextChanged(object sender, EventArgs e)
+    {
+        ShowPopup(Convert.ToInt32(hdnMomId_Popup.Value));
+    }
+
+    protected void txtMailCC_TextChanged(object sender, EventArgs e)
+    {
+        //ShowPopup(Convert.ToInt32(hdnMomId_Popup.Value));
+    }
+
+    protected void gvMOMs_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower().Trim() == "showmom")
+        {
+            ShowPopup(Convert.ToInt32(e.CommandArgument.ToString()));
+            btnSendMail.Visible = false;
+        }
+    }
+
+    #endregion
+
+    #region Attendee / Agenda
+
+    protected void txtName_TextChanged(object sender, EventArgs e)
+    {
+        if (hdnAttendeeUserId.Value != "" && hdnAttendeeUserId.Value != "0")
+        {
+            DataSet dsGetUserDetail = DBOperations.GetUserByID(Convert.ToInt32(hdnAttendeeUserId.Value));
+            if (dsGetUserDetail != null && dsGetUserDetail.Tables[0].Rows.Count > 0)
+            {
+                txtAttendeeEmail.Text = dsGetUserDetail.Tables[0].Rows[0]["sEmail"].ToString();
+            }
+
+            hdnAttendeeUserId.Value = "0";
+        }
+    }
+
+    protected void btnAddAttendee_Click(object sender, EventArgs e)
+    {
+        int AfterInsertedRows = 0, OriginalRows = 0, PkId = 1;
+        DataTable dtAttendee = (DataTable)ViewState["Attendee"];
+        if (dtAttendee != null && dtAttendee.Rows.Count > 0)
+        {
+            for (int i = 0; i < dtAttendee.Rows.Count; i++)
+            {
+                if (dtAttendee.Rows[i]["PkId"] != null)
+                {
+                    PkId = Convert.ToInt32(dtAttendee.Rows[i]["PkId"].ToString());
+                    PkId++;
+                }
+            }
+        }
+
+        if (dtAttendee != null)
+            OriginalRows = dtAttendee.Rows.Count;               //get original rows of grid view.
+
+        if (txtName.Text.Trim() != "")
+        {
+            dtAttendee.Rows.Add(PkId, Convert.ToInt32(hdnAttendeeUserId.Value), Convert.ToString(txtName.Text.Trim()), txtAttendeeEmail.Text.Trim());
+            AfterInsertedRows = dtAttendee.Rows.Count;              //get present rows after deleting particular row from grid view.
+            ViewState["Attendee"] = dtAttendee;
+            BindAttendee();
+            if (OriginalRows < AfterInsertedRows)
+            {
+                lblError.Text = "User Added successfully.";
+                lblError.CssClass = "success";
+                hdnAttendeeUserId.Value = "0";
+                txtName.Text = "";
+                txtAttendeeEmail.Text = "";
+            }
+            else
+            {
+                lblError.Text = "System Error. Please Try After Sometime!";
+                lblError.CssClass = "errorMsg";
+            }
+        }
+    }
+
+    protected void gvExistingAttendee_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower().Trim() == "remove")
+        {
+            int gvrow = Convert.ToInt32(e.CommandArgument.ToString());
+            int OriginalRows = 0, AfterDeletedRows = 0;
+            Label lblPkId = (Label)gvExistingAttendee.Rows[gvrow].FindControl("lblPkId");
+
+            DataTable dtAttendee = ViewState["Attendee"] as DataTable;
+            OriginalRows = dtAttendee.Rows.Count;                                   // get original rows of grid view
+
+            DataRow[] drr = dtAttendee.Select("PkId='" + lblPkId.Text + "' ");      // get particular row id to be deleted
+            foreach (var row in drr)
+                row.Delete();                                                       // delete the row
+
+            AfterDeletedRows = dtAttendee.Rows.Count;                               // get present rows after deleting particular row from grid view
+            ViewState["Attendee"] = dtAttendee;
+            BindAttendee();
+            if (OriginalRows > AfterDeletedRows)
+            {
+                lblError.CssClass = "success";
+                lblError.Text = "Successfully Deleted attendee.";
+            }
+            else
+            {
+                lblError.Text = "Error while deleting container details. Please try again later..!!";
+                lblError.CssClass = "errorMsg";
+            }
+        }
+    }
+
+    protected void BindAttendee()
+    {
+        if (ViewState["Attendee"].ToString() != "")
+        {
+            DataTable dtAttendee = (DataTable)ViewState["Attendee"];
+            gvExistingAttendee.DataSource = dtAttendee;
+            gvExistingAttendee.DataBind();
+        }
+    }
+
+    /////////////////////////////////////////////////////////////
+
+    protected void btnAddAgenda_Click(object sender, EventArgs e)
+    {
+        AddNewRow_Agenda();
+    }
+
+    protected void SetInitialRow_Agenda()
+    {
+        DataTable dt = new DataTable();
+        DataRow dr = null;
+        dt.Columns.Add(new DataColumn("PkId", typeof(string)));
+        dt.Columns.Add(new DataColumn("Topic", typeof(string)));
+        dt.Columns.Add(new DataColumn("Description", typeof(string)));
+        dt.Columns.Add(new DataColumn("PersonName", typeof(string)));
+
+        dr = dt.NewRow();
+        dr["PkId"] = 1;
+        dr["Topic"] = string.Empty;
+        dr["Description"] = string.Empty;
+        dr["PersonName"] = string.Empty;
+        dt.Rows.Add(dr);
+        ViewState["Agenda"] = dt;
+
+        gvAgenda.DataSource = dt;
+        gvAgenda.DataBind();
+    }
+
+    protected void AddNewRow_Agenda()
+    {
+        int rowIndex = 0;
+        if (ViewState["Agenda"] != null)
+        {
+            DataTable dtCurrentTable = (DataTable)ViewState["Agenda"];
+            DataRow drCurrentRow = null;
+
+            if (dtCurrentTable.Rows.Count > 0)
+            {
+                for (int i = 1; i <= dtCurrentTable.Rows.Count; i++)
+                {
+                    //extract the TextBox values
+                    TextBox txtTopic = (TextBox)gvAgenda.Rows[rowIndex].Cells[1].FindControl("txtTopic");
+                    TextBox txtDescription = (TextBox)gvAgenda.Rows[rowIndex].Cells[2].FindControl("txtDescription");
+                    TextBox txtPersonName = (TextBox)gvAgenda.Rows[rowIndex].Cells[3].FindControl("txtPersonName");
+
+                    drCurrentRow = dtCurrentTable.NewRow();
+                    drCurrentRow["PkId"] = i + 1;
+
+                    dtCurrentTable.Rows[i - 1]["Topic"] = txtTopic.Text;
+                    dtCurrentTable.Rows[i - 1]["Description"] = txtDescription.Text;
+                    dtCurrentTable.Rows[i - 1]["PersonName"] = txtPersonName.Text;
+
+                    rowIndex++;
+                }
+
+                dtCurrentTable.Rows.Add(drCurrentRow);
+                ViewState["Agenda"] = dtCurrentTable;
+
+                gvAgenda.DataSource = dtCurrentTable;
+                gvAgenda.DataBind();
+            }
+        }
+
+        SetPreviousData_Agenda();
+    }
+
+    protected void SetPreviousData_Agenda()
+    {
+        int rowIndex = 0;
+        if (ViewState["Agenda"] != null)
+        {
+            DataTable dt = (DataTable)ViewState["Agenda"];
+            if (dt.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    TextBox txtTopic = (TextBox)gvAgenda.Rows[rowIndex].Cells[1].FindControl("txtTopic");
+                    TextBox txtDescription = (TextBox)gvAgenda.Rows[rowIndex].Cells[2].FindControl("txtDescription");
+                    TextBox txtPersonName = (TextBox)gvAgenda.Rows[rowIndex].Cells[3].FindControl("txtPersonName");
+
+                    txtTopic.Text = dt.Rows[i]["Topic"].ToString();
+                    txtDescription.Text = dt.Rows[i]["Description"].ToString();
+                    txtPersonName.Text = dt.Rows[i]["PersonName"].ToString();
+                    rowIndex++;
+                }
+            }
+        }
+    }
+
+    #endregion
+
+    #region Activity
+
+    protected void btnAddActivity_Click(object sender, EventArgs e)
+    {
+        if (txtActivityDescription.Text.Trim() != "")
+        {
+            int result = DBOperations.CRM_AddActivityLog(txtActivityDescription.Text.Trim(), Convert.ToInt32(Session["LeadId"]),Convert.ToInt32(ddlCurrentStatus.SelectedValue), LoggedInUser.glUserId);
+            if (result == 0)
+            {
+                lblError.Text = "Successfully added activity!";
+                lblError.CssClass = "success";
+                gvActivity.DataBind();
+                InvisibleField();
+            }
+            else
+            {
+                lblError.Text = "System error! Please try again later.";
+                lblError.CssClass = "success";
+            }
+        }
+        else
+        {
+            lblError.Text = "Please Enter Description For Activity.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void InvisibleField()
+    {
+        ddlCurrentStatus.SelectedIndex = -1;
+        txtActivityDescription.Text = "";
+    }
+    protected void btnCancelActivity_Click(object sender, EventArgs e)
+    {
+        txtActivityDescription.Text = "";
+        gvActivity.DataBind();
+    }
+
+    #endregion
+
+    #region Enquiry
+
+    protected void gvEnquiry_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            // Contract Copy
+            ImageButton imgbtnContract = (ImageButton)e.Row.FindControl("imgbtnContract");
+           // imgbtnContract.Visible = false;
+            if (DataBinder.Eval(e.Row.DataItem, "ContractCopy") != DBNull.Value)
+            {
+                //imgbtnContract.Visible = true;
+            }
+
+            // Quote Path
+            ImageButton imgbtnDownloadQuote = (ImageButton)e.Row.FindControl("imgbtnDownloadQuote");
+            Label objlblQuoteText = (Label)e.Row.FindControl("lblQuoteText");
+           
+            // imgbtnDownloadQuote.Visible = false;
+            if (DataBinder.Eval(e.Row.DataItem, "QuotePath") != DBNull.Value)
+            {
+                if (DataBinder.Eval(e.Row.DataItem, "QuotePath").ToString().Trim() != "" && DataBinder.Eval(e.Row.DataItem, "QuotePath").ToString().Trim() != "-")
+                {
+                    imgbtnDownloadQuote.Visible = true;
+                }
+                else if(objlblQuoteText != null)
+                {
+                    objlblQuoteText.Visible = true;
+                    objlblQuoteText.Text = "Kindly Quote";
+                }
+            }
+            else if (objlblQuoteText != null)
+            {
+                objlblQuoteText.Visible = true;
+                objlblQuoteText.Text = "Kindly Quote";
+            }
+        }
+    }
+
+    protected void gvEnquiry_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower() == "downloadquote")
+        {
+            string DocPath = e.CommandArgument.ToString();
+            DownloadDoc(DocPath);
+        }
+        else if (e.CommandName.ToLower() == "contract")
+        {
+            string DocPath = e.CommandArgument.ToString();
+            DownloadDoc(DocPath);
+        }
+    }
+
+    protected void DownloadDoc(string DocumentPath)
+    {
+        //DocumentPath =  DBOperations.GetDocumentPath(Convert.ToInt32(DocumentId));
+        string ServerPath = FileServer.GetFileServerDir();
+
+        if (ServerPath == "")
+        {
+            //ServerPath = HttpContext.Current.Server.MapPath("..\\UploadExportFiles\\ChecklistDoc\\" + DocumentPath);
+            ServerPath = HttpContext.Current.Server.MapPath("..\\UploadFiles\\Quotation\\" + DocumentPath);
+        }
+        else
+        {
+            ServerPath = ServerPath + "Quotation\\" + DocumentPath;
+        }
+        try
+        {
+            HttpResponse response = Page.Response;
+            FileDownload.Download(response, ServerPath, DocumentPath);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    #endregion
+
+    protected void btnAddService_Click(object sender, EventArgs e)
+    {
+        if (Convert.ToString(Session["LeadId"]) != "")
+        {
+            DateTime dtCloseDate = DateTime.MinValue;
+            if (txtCloseDate.Text.Trim() != "")
+                dtCloseDate = Commonfunctions.CDateTime(txtCloseDate.Text.Trim());
+
+            if (ddlService.SelectedValue != "0" && ddlLocation.SelectedValue != "0")
+            {
+                int result_Service = DBOperations.CRM_AddLeadService(Convert.ToInt32(Session["LeadId"]), Convert.ToInt32(ddlService.SelectedValue),
+                                        Convert.ToInt32(ddlLocation.SelectedValue), txtVolumeExp.Text.Trim(), txtRequirement.Text.Trim(), dtCloseDate, LoggedInUser.glUserId);
+                if (result_Service > 0)
+                {
+                    int EnquiryService = DBOperations.CRM_AddEnquiry_Service(result_Service, Convert.ToInt32(ddlService.SelectedValue), LoggedInUser.glUserId);
+                    lblError.Text = "Added service successfully!";
+                    lblError.CssClass = "success";
+                    txtRequirement.Text = "";
+                    txtVolumeExp.Text = "";
+                    txtCloseDate.Text = "";
+                    gvService.DataBind();
+                    ddlLocation.Items.Clear();
+                    ddlLocation.DataBind();
+                    ddlService.Items.Clear();
+                    ddlService.DataBind();
+                }
+                else if (result_Service == 2)
+                {
+                    lblError.Text = "Service already exists!";
+                    lblError.CssClass = "errorMsg";
+                }
+                else
+                {
+                    lblError.Text = "System Error! Please try after sometime";
+                    lblError.CssClass = "errorMsg";
+                }
+                CheckService(); //added by sayali  08-11-2019
+            }
+        }
+        else
+        {
+            lblError.Text = "Lead not found! Try again later.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected void btnCancelService_Click(object sender, EventArgs e)
+    {
+        lblError.Text = "";
+        txtRequirement.Text = "";
+        txtVolumeExp.Text = "";
+        txtCloseDate.Text = "";
+        gvService.DataBind();
+        ddlLocation.Items.Clear();
+        ddlLocation.DataBind();
+        ddlService.Items.Clear();
+        ddlService.DataBind();
+    }
+
+    #region KYC
+    protected void gvKYCCopys_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName.ToLower() == "download")
+        {
+            string DocPath = e.CommandArgument.ToString();
+            DownloadKYCDoc("\\KYC\\" + DocPath);
+        }
+    }
+
+    protected void DownloadKYCDoc(string DocumentPath)
+    {
+        String ServerPath = FileServer.GetFileServerDir();
+
+        if (ServerPath == "")
+        {
+            ServerPath = HttpContext.Current.Server.MapPath("..\\UploadFiles\\" + DocumentPath);
+        }
+        else
+        {
+            ServerPath = ServerPath + DocumentPath;
+        }
+        try
+        {
+            HttpResponse response = Page.Response;
+            FileDownload.Download(response, ServerPath, DocumentPath);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    #endregion
+
+    #region Documnet Upload/Download/Delete
+
+    protected void btnSaveDocument2_Click(object sender, EventArgs e)
+    {
+        string fileName = "";
+
+        if (hdnQuotationId.Value != "0" && hdnQuotationId.Value != "")
+        {
+            if (fuDocument2 != null && fuDocument2.HasFile)
+                fileName = UploadQuoteFiles(fuDocument2, "");
+
+            if (fileName != "")
+            {
+                int result_Doc = QuotationOperations.AddQuotationAnnexure(Convert.ToInt32(hdnQuotationId.Value), fileName, LoggedInUser.glUserId);
+                if (result_Doc == 1)
+                {
+                    lblError.Text = "Document Added successfully!";
+                    lblError.CssClass = "success";
+                    gvDocuments.DataBind();
+                }
+                else
+                {
+                    lblError.Text = "System Error! Please Try After Sometime.";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+            else
+            {
+                lblError.Text = "Please browse document to upload.";
+                lblError.CssClass = "errorMsg";
+            }
+        }
+        else
+        {
+            lblError.Text = "Contract Details Not Found.";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    public string UploadQuoteFiles(FileUpload FU, string FilePath)
+    {
+        string FileName = FU.FileName;
+        string ServerFilePath = FileServer.GetFileServerDir();
+
+        if (ServerFilePath == "")
+            ServerFilePath = Server.MapPath("..\\UploadFiles\\Quotation\\" + FilePath);
+        else
+            ServerFilePath = ServerFilePath + "Quotation\\" + FilePath;
+
+        if (!System.IO.Directory.Exists(ServerFilePath))
+        {
+            System.IO.Directory.CreateDirectory(ServerFilePath);
+        }
+        if (FU.FileName != string.Empty)
+        {
+            if (System.IO.File.Exists(ServerFilePath + FileName))
+            {
+                string ext = Path.GetExtension(FU.FileName);
+                FileName = Path.GetFileNameWithoutExtension(FU.FileName);
+                string FileId = RandomString(5);
+                FileName += "_" + FileId + ext;
+            }
+            FU.SaveAs(ServerFilePath + FileName);
+            return FilePath + FileName;
+        }
+        else
+            return "";
+    }
+
+    protected string UploadFiles(string GetFileName)
+    {
+        string FileName = GetFileName;
+        FileName = FileName.Replace(".", "");
+
+        string ServerFilePath = FileServer.GetFileServerDir();
+
+        if (ServerFilePath == "")
+            ServerFilePath = Server.MapPath("..\\UploadFiles\\Quotation\\" + FileName);
+        else
+            ServerFilePath = ServerFilePath + "Quotation\\" + FileName;
+
+        if (!System.IO.Directory.Exists(ServerFilePath))
+        {
+            System.IO.Directory.CreateDirectory(ServerFilePath);
+        }
+        if (FileName != string.Empty)
+        {
+            if (System.IO.File.Exists(ServerFilePath + FileName))
+            {
+                string ext = ".pdf";
+                FileName = Path.GetFileNameWithoutExtension(FileName);
+
+                string FileId = RandomString(5);
+
+                FileName += "_" + FileId + ext;
+            }
+            return FileName;
+        }
+        else
+            return "";
+    }
+
+    #endregion
+
+    #region Check service is exist  
+    protected void CheckService()//added by sayali  08-11-2019
+    {
+        if (gvService.Rows.Count == 0)
+        {
+            //lblError.Visible = true;
+            //lblError.Text = "Please First Add Service, Before adding Activity";
+            //lblError.CssClass = "errorMsg";
+            //btnAddActivity.Visible = false;
+            lblMsg.Visible = true;
+            lblMsg.Text = "Please First Add Service";
+            //lblMsg.CssClass = "errorMsg";
+            btnAddActivity.Visible = false;
+        }
+        else
+        {
+            //lblError.Visible = false;
+            //lblError.Text = "";
+            btnAddActivity.Visible = true;
+            lblMsg.Visible = false;
+            lblMsg.Text = "";
+        }
+    }
+    #endregion
+
+
+    protected void btnSaveShare_Click(object sender, EventArgs e)
+    {
+        if(Session["LeadId"].ToString()!="")
+        {
+            if(ddlShareUser.SelectedValue!="0")
+            {
+                int Result = DBOperations.CRM_insLeadShare(Convert.ToInt32(Session["LeadId"]), Convert.ToInt32(ddlShareUser.SelectedValue), txtShareRemark.Text.Trim(), LoggedInUser.glUserId, LoggedInUser.glFinYearId);
+                if(Result==0)
+                {
+                    lblError.Text = "User Shared successfully!";
+                    lblError.CssClass = "success";
+                    gvShareLead.DataBind();
+                    txtShareRemark.Text = "";
+                    ddlShareUser.SelectedIndex=-1;
+                }
+                else
+                {
+                    lblError.Text = "System Error! Please try after sometime";
+                    lblError.CssClass = "errorMsg";
+                }
+            }
+        }
+    }
+
+    protected void btnCancelShare_Click(object sender, EventArgs e)
+    {
+        txtShareRemark.Text = "";
+        ddlShareUser.SelectedIndex=-1;
+    }
+
+    protected void ddlShareUser_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if(ddlShareUser.SelectedValue!="0")
+        {
+            DataTable dt = DBOperations.CRM_GetShareUser(Convert.ToInt32(Session["LeadId"]), LoggedInUser.glUserId, LoggedInUser.glFinYearId);
+            if(dt.Rows.Count>0)
+            {
+                foreach (DataRow row in dt.Rows)
+                {
+                    string ShareUserId = row["AssignedTo"].ToString();
+
+                    if(ShareUserId==ddlShareUser.SelectedValue)
+                    {
+                        lblError.Text = "Already Share with this User";
+                        lblError.CssClass = "errorMsg";
+                        ddlShareUser.SelectedIndex = -1;
+                        txtShareRemark.Text = "";
+                    }
+                }
+            }
+        }
+        else
+        {
+            lblError.Text = "Please select Assign To User!";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    #region KYC EMAIL
+
+    protected void lnkKYCEmail_Click(object sender, EventArgs e)
+    {
+        bool result = SendMailForKYC(Convert.ToInt32(Session["LeadId"]));
+
+        if (result == true)
+        {
+            lblError.Text = "KYC Email Sent Successfully!";
+            lblError.CssClass = "success";
+        }
+        else
+        {
+            lblError.Text = "KYC Email Sending Faild!";
+            lblError.CssClass = "errorMsg";
+        }
+    }
+
+    protected bool SendMailForKYC(int LeadId)
+    {
+        gvEnquiry.DataKeys[0].Value.ToString();
+
+        string MessageBody = "", strCustomerEmail = "", strCCEmail = "", strSubject = "", strLeadRefNo = "", strLeadDate = "", strCompanyName = "",
+                strService = "", strContactName = "", strMobileNo = "", strCreatedBy = "", strCreatedDate = "", strAddress = "", strAlternatePhone = "", strEmail = "",
+                strDesignation = "", strLeadCreatedByEmail = "", EmailContent = "";
+        string EncryptedEnquiryId = "0";
+
+        bool bEmailSuccess = false;
+        StringBuilder strbuilder = new StringBuilder();
+        DataSet dsGetLead = DBOperations.CRM_GetLeadById(LeadId);
+        if (dsGetLead != null)
+        {
+            try
+            {
+                EncryptedEnquiryId = HttpUtility.UrlEncode(Encrypt(Convert.ToString(gvEnquiry.DataKeys[0].Value.ToString())));
+
+                string strFileName = "../EmailTemplate/KYCRequest.txt";
+                //string strFileName = "../EmailTemplate/KYCRequest.html";
+                StreamReader sr = new StreamReader(Server.MapPath(strFileName));
+                sr = File.OpenText(Server.MapPath(strFileName));
+                EmailContent = sr.ReadToEnd();
+                sr.Close();
+                sr.Dispose();
+                GC.Collect();
+            }
+            catch (Exception ex)
+            {
+                lblError.Text = ex.Message;
+                lblError.CssClass = "errorMsg";
+            }
+
+            MessageBody = EmailContent.Replace("@KycLink", "http://live.babajishivram.com/KYC_New/index.aspx?p=" + EncryptedEnquiryId);
+            MessageBody = MessageBody.Replace("@Company", dsGetLead.Tables[0].Rows[0]["CompanyName"].ToString());
+            MessageBody = MessageBody.Replace("@Contact", dsGetLead.Tables[0].Rows[0]["ContactName"].ToString());
+            MessageBody = MessageBody.Replace("@Email", dsGetLead.Tables[0].Rows[0]["Email"].ToString());
+            MessageBody = MessageBody.Replace("@PhoneNo", dsGetLead.Tables[0].Rows[0]["MobileNo"].ToString());
+            MessageBody = MessageBody.Replace("@CreatedBy", dsGetLead.Tables[0].Rows[0]["CreatedBy"].ToString());
+            MessageBody = MessageBody.Replace("@CreatedDate", Convert.ToDateTime(dsGetLead.Tables[0].Rows[0]["CreatedDate"]).ToString("dd/MM/yyyy"));
+            MessageBody = MessageBody.Replace("@UserName", dsGetLead.Tables[0].Rows[0]["CreatedBy"].ToString());
+
+            strSubject = "KYC Request from Babaji Shivram Clearing & Carriers Pvt. Ltd.";
+            strCustomerEmail = dsGetLead.Tables[0].Rows[0]["Email"].ToString();
+            strCCEmail = "javed.shaikh@babajishivram.com" + " , " + dsGetLead.Tables[0].Rows[0]["CreatedByMail"].ToString();
+
+            if (strCustomerEmail == "" || strSubject == "")
+                return false;
+            else
+            {
+                List<string> lstFileDoc = new List<string>();
+                bEmailSuccess = EMail.SendMailMultiAttach(strCustomerEmail, strCustomerEmail, strCCEmail, strSubject, MessageBody, lstFileDoc);
+                return bEmailSuccess;
+            }
+        }
+        else
+            return false;
+    }
+
+    #region ENCRYPT/DECRYPT QUERYSTRING VARIABLES
+    private string Encrypt(string clearText)
+    {
+        string EncryptionKey = "MAKV2SPBNI99212";
+        byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
+        using (Aes encryptor = Aes.Create())
+        {
+            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+            encryptor.Key = pdb.GetBytes(32);
+            encryptor.IV = pdb.GetBytes(16);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(clearBytes, 0, clearBytes.Length);
+                    cs.Close();
+                }
+                clearText = Convert.ToBase64String(ms.ToArray());
+            }
+        }
+        return clearText;
+    }
+    private string Decrypt(string cipherText)
+    {
+        try
+        {
+            string EncryptionKey = "MAKV2SPBNI99212";
+            cipherText = cipherText.Replace(" ", "+");
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
+                    }
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
+                }
+            }
+        }
+        catch (Exception en)
+        {
+
+        }
+        return cipherText;
+    }
+    #endregion
+    #endregion
+
+
+    #region for contract apply check
+
+    protected void CheckKYCDone()
+    {
+        DataTable dtCheckKYC = DBOperations.CRM_CheckKYC(Convert.ToString(Session["LeadId"]));
+        if(dtCheckKYC.Rows.Count>0)
+        {
+            foreach (DataRow row in dtCheckKYC.Rows)
+            {
+                string KYC = row["KYC"].ToString();
+
+                if(KYC == "Pending")
+                {
+                    btnAddContractCopy.Visible = false;
+                }
+                else
+                {
+                    btnAddContractCopy.Visible = true;
+                }
+            }
+        }
+
+        
+    }
+
+    #endregion
+
+
+    protected bool SendKYCStampEmail(int VendorId)
+    {
+        bool bEmailSuccess = false;
+        StringBuilder strbuilder = new StringBuilder();
+        StringBuilder strbuilder_Attendee = new StringBuilder();
+        StringBuilder strAttendeeEmail = new StringBuilder();
+
+        if (VendorId > 0)
+        {
+            string EncryptedVendorId = HttpUtility.UrlEncode(Encrypt(VendorId.ToString()));
+            string MessageBody = "", strCustomerEmail = "", strCCEmail = "", strCCEmail_Loc = "", strSubject = "", EmailContent = "", strKYCPath = "", strCompanyEmail = "";
+            DataSet dsGetVendor = KYCOperation.GetVendorDetailById(VendorId);
+            if (dsGetVendor != null)
+            {
+                try
+                {
+                    string strFileName = "../EmailTemplate/StampKYC.html";
+                    StreamReader sr = new StreamReader(Server.MapPath(strFileName));
+                    sr = File.OpenText(Server.MapPath(strFileName));
+                    EmailContent = sr.ReadToEnd();
+                    sr.Close();
+                    sr.Dispose();
+                    GC.Collect();
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+
+                MessageBody = EmailContent.Replace("@KycLink", "http://live.babajishivram.com/KYC_New/SaveKYC.aspx?p=" + EncryptedVendorId);
+                //MessageBody = EmailContent.Replace("@KycLink", "http://192.168.5.46/CRMProject/KYC_New/SaveKYC.aspx?p=" + VendorId);
+                MessageBody = MessageBody.Replace("@Company", dsGetVendor.Tables[0].Rows[0]["CompanyName"].ToString());
+                MessageBody = MessageBody.Replace("@Address1", dsGetVendor.Tables[0].Rows[0]["Address1"].ToString());
+                MessageBody = MessageBody.Replace("@Address2", dsGetVendor.Tables[0].Rows[0]["Address2"].ToString());
+                MessageBody = MessageBody.Replace("@Email", dsGetVendor.Tables[0].Rows[0]["Email"].ToString());
+                MessageBody = MessageBody.Replace("@City", dsGetVendor.Tables[0].Rows[0]["City"].ToString());
+                MessageBody = MessageBody.Replace("@State", dsGetVendor.Tables[0].Rows[0]["StateName"].ToString());
+                MessageBody = MessageBody.Replace("@Country", dsGetVendor.Tables[0].Rows[0]["CountryName"].ToString());
+                MessageBody = MessageBody.Replace("@Pincode", dsGetVendor.Tables[0].Rows[0]["Pincode"].ToString());
+                MessageBody = MessageBody.Replace("@Website", dsGetVendor.Tables[0].Rows[0]["WebsiteAdd"].ToString());
+
+                strCompanyEmail = dsGetVendor.Tables[0].Rows[0]["Email"].ToString();
+                strCCEmail_Loc = dsGetVendor.Tables[0].Rows[0]["EnquiryPersonEmail"].ToString();
+
+                // Email FormatdsGetVendor
+                strCustomerEmail = strCompanyEmail; //"kivisha.jain@babajishivram.com"; //strCompanyEmail; // "jr.developer@babajishivram.com";
+                //strCustomerEmail = "developer1@babajishivram.com"; //strCompanyEmail; // "jr.developer@babajishivram.com";
+                strCCEmail = "javed.shaikh@babajishivram.com," + strCCEmail_Loc;
+                strSubject = "Stamped KYC Request from Babaji Shivram Clearing & Carriers Pvt. Ltd.";
+
+                if (strCustomerEmail == "" || strSubject == "")
+                    return false;
+                else
+                {
+                    List<string> lstFilePath = new List<string>();
+                    strKYCPath = dsGetVendor.Tables[0].Rows[0]["KYCCopyPath"].ToString();
+                    lstFilePath.Add(strKYCPath);
+
+                    bEmailSuccess = EMail.SendMailMultiAttach(strCustomerEmail, strCustomerEmail, strCCEmail, strSubject, MessageBody, lstFilePath);
+                    return bEmailSuccess;
+
+                    if(bEmailSuccess==true)
+                    {
+                        lblError.Text = "Stamp KYC Request Email Sent Successfully!";
+                        lblError.CssClass = "success";
+                    }
+                }
+            }
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+
+    protected void lnkStampCopyEmail_Click(object sender, EventArgs e)
+    {
+        int VendorId=0;
+        DataTable dtKYC = DBOperations.GetKYCVendorId(Convert.ToInt32(Session["LeadId"]));
+        if(dtKYC.Rows.Count>0)
+        {
+            foreach (DataRow row in dtKYC.Rows)
+            {
+                VendorId =Convert.ToInt32(row["lid"].ToString());
+            }
+        }
+        SendKYCStampEmail(VendorId);
+    }
+}
